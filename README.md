@@ -1,3 +1,40 @@
+# Temp documentation:
+## installation
+### Download repository
+```shell
+git clone https://github.com:AxelPauwels/ohmyzsh.git ~/.oh-my-zsh
+```
+### Main Install
+```shell
+~/.oh-my-zsh/custom/installation/install.sh
+```
+Full or Partial installation of:
+1. Zsh
+2. Fonts
+3. iTerm
+4. iTerm color settings
+5. iTerm font settings
+6. Theme Powerlevel10k
+7. Theme Agnoster
+8. Warp
+9. Zshrc
+
+### Install More
+```shell
+~/.oh-my-zsh/custom/installation/install-more.sh
+```
+1. Pyenv
+2. Cursor speed
+3. GitHub Cli
+
+### Configure your git-prompt
+Note: Currently not yet for Warp. (They are working on it)
+```shell
+~/.oh-my-zsh/custom/installation/configure-powerlevel.sh
+```
+
+---
+
 <p align="center"><img src="https://ohmyzsh.s3.amazonaws.com/omz-ansi-github.png" alt="Oh My Zsh"></p>
 
 Oh My Zsh is an open source, community-driven framework for managing your [zsh](https://www.zsh.org/) configuration.
