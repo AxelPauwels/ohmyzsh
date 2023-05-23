@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
 
-install_pyenv(){
+install_pyenv() {
   brew install pyenv
   #pyenv install --list
   #pyenv install --list | grep "3\.[0-9]" (to list more specific versions)
   #pyenv install 2.7.18 (or any other version)
 
+  latest_version=$(pyenv install --list | grep -v - | tail -1)
 
-latest_version=$(pyenv install --list | grep -v - | tail -1)
-
-if [ -n "$latest_version" ]; then
-  pyenv install "$latest_version" #(currently this is mambaforge)
-else
-  echo "Unable to retrieve the latest version."
-fi
+  if [ -n "$latest_version" ]; then
+    pyenv install "$latest_version" #(currently this is mambaforge)
+  else
+    echo "Unable to retrieve the latest version."
+  fi
 
   pyenv install $latest_version
   #pyenv versions
@@ -41,7 +40,7 @@ fi
   # See also local: https://realpython.com/intro-to-pyenv/#local
 }
 
-check_install_pyenv(){
+check_install_pyenv() {
   if command_exists pyenv; then
     msg_found "Installed"
   else

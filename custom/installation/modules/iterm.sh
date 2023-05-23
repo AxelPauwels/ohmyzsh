@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
 iterm2_plist="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
-#meslo_font_name="MesloLGS NF"
-meslo_font_name="MesloLGS-NF-Regular 11"
-meslo_font_size=13 #keep odd number here
+meslo_font_size=13 #use odd number here
+meslo_font_name="MesloLGS-NF-Regular ${meslo_font_size}"
 
 color_preset_name='Custom'
 color_preset_file_name="$color_preset_name.itermcolors"
 color_preset_file_path="$ZSH_CUSTOM/schemes/$color_preset_file_name"
 
-defauls_color_preset_key="Color Preset"         #just to keep track of it
-defauls_color_preset_value="$color_preset_name" #just to keep track of it
+defaults_color_preset_key="Color Preset"         #just to keep track of it
+defaults_color_preset_value="$color_preset_name" #just to keep track of it
+
+# NOW JUST KEEP TRACK WITH THIS:
+defaults_is_our_custom_color_and_font="custom_color_and_font_is_set"
 
 install_iterm() {
   new_line
@@ -44,33 +46,6 @@ check_install_iterm() {
 # manual-installation
 install_iterm_manually() {
   install_iterm
-}
-
-# Note this also should be installed to use in other shells, because other shells are depending on your main shell settings
-# Note there's also a color-preset/x.itermcolors file. this can be used for manual import at iterm > settings > profiles > Colors > Color Presets (at bottom right) > import
-_override_plist_for_color_preset() {
-  #  new_line
-  #  msg_title "Iterm2 color settings"
-  msg_searching "Searching for iterm config file"
-
-  if file_exists "$iterm2_plist"; then
-    msg_found "Found"
-
-    msg_searching "Copying existing iterm config file as backup (~/Library/Preferences/com.googlecode.iterm2.plist.old)"
-    cp "$iterm2_plist" "$iterm2_plist.old"
-    msg_found "Copied"
-
-    msg_searching "Overriding iterm config file"
-    cp "$ZSH_INSTALL/resources/iterm/plist/iterm2.plist" "$iterm2_plist"
-    msg_found "Overridden"
-  else
-    msg_not_found "Not Found"
-
-    msg_searching "Creating a new iterm config file"
-    cp "$ZSH_INSTALL/resources/iterm/plist/iterm2.plist" "$iterm2_plist"
-    msg_found "Created"
-  fi
-  #  msg_installed "Iterm2 color set"
 }
 
 # copy file from resources to correct destination and use downloaded script to import this
@@ -120,27 +95,60 @@ _import_scheme() {
   msg_installed "Scheme imported"
 }
 
+# Note this also should be installed to use in other shells, because other shells are depending on your main shell settings
+# Note there's also a color-preset/x.itermcolors file. this can be used for manual import at iterm > settings > profiles > Colors > Color Presets (at bottom right) > import
+
+_override_plist() {
+  defaults write com.googlecode.iterm2 "$defaults_is_our_custom_color_and_font" -bool "true" # evaluates to 1
+
+  source_path="$ZSH_INSTALL/resources/iterm/plist/com.googlecode.iterm2.with-colors-and-font.plist"
+  destination_path="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
+
+  new_line
+  msg_title "Override Iterm2 preferences"
+  msg_searching "Searching plist file"
+
+  if file_exists "$destination_path"; then
+    msg_found "Found"
+
+    msg_searching "Copying existing plist file as backup (~/Library/Preferences/com.googlecode.iterm2.plist.old)"
+    cp "$destination_path" "$destination_path.old"
+    msg_found "Copied"
+
+    msg_searching "Overriding existing plist file"
+    cp "$source_path" "$destination_path"
+    msg_found "Overridden"
+  else
+    msg_warning "No plist file found"
+
+    msg_searching "Creating a new plist file"
+    cp "$source_path" "$destination_path"
+    msg_found "plist file created"
+  fi
+
+  msg_installed "Iterm2 preferences installed"
+}
+
 #todo: this can only be set/activated by an applescript (this is under construction)
 _set_color_preset() {
   msg_searching "Checking color preset"
 
-  color_preset=$(defaults read com.googlecode.iterm2 "$defauls_color_preset_key" 2>/dev/null)
+  color_preset=$(defaults read com.googlecode.iterm2 "$defaults_color_preset_key" 2>/dev/null)
 
   if [[ "$color_preset" ]]; then
-    if [[ "$color_preset" == "$defauls_color_preset_value" ]]; then
+    if [[ "$color_preset" == "$defaults_color_preset_value" ]]; then
       msg_found "Configured"
     else
-      defaults write com.googlecode.iterm2 "$defauls_color_preset_key" "$defauls_color_preset_value"
+      defaults write com.googlecode.iterm2 "$defaults_color_preset_key" "$defaults_color_preset_value"
       msg_found "Configured"
     fi
   else
     msg_not_found "Not configured"
 
     msg_searching "Configuring"
-    defaults write com.googlecode.iterm2 "$defauls_color_preset_key" -string "$defauls_color_preset_value"
+    defaults write com.googlecode.iterm2 "$defaults_color_preset_key" -string "$defaults_color_preset_value"
     msg_found "Configured"
   fi
-  _override_plist_for_color_preset
   msg_installed "Iterm2 color set"
 
   # use this if script import_schema is NOT used
@@ -157,30 +165,7 @@ _set_color_preset() {
   defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "$color_scheme_uuid"
 }
 
-install_color_preset() {
-  _import_scheme
-  _set_color_preset
-}
-
-# manual-installation-check
-check_install_color_preset() {
-  color_preset=$(defaults read com.googlecode.iterm2 "$defauls_color_preset_key" 2>/dev/null)
-
-  if [[ "$color_preset" ]]; then
-    if [[ "$color_preset" == "$defauls_color_preset_value" ]]; then
-      msg_found "Installed"
-      return 0
-    fi
-  fi
-  msg_not_found "Not Installed"
-}
-
-# manual-installation
-install_color_preset_manually() {
-  install_color_preset
-}
-
-set_font() {
+_set_font() {
   new_line
   msg_title "Iterm2 font settings"
 
@@ -211,21 +196,53 @@ set_font() {
   msg_installed "Iterm2 font and size set"
 }
 
-# manual-installation-check
-check_set_font() {
-  bookmark_normal_font=$(/usr/libexec/PlistBuddy -c "Print :'New Bookmarks':0:'Normal Font'" "$iterm2_plist" 2>/dev/null)
-  if [[ "$bookmark_normal_font" ]]; then
-    if [[ "$bookmark_normal_font" == "$meslo_font_name" ]]; then
-      msg_found "Installed"
-    else
-      msg_not_found "Not Installed"
-    fi
-  else
-    msg_not_found "Not Installed"
-  fi
+install_color_preset_and_font() {
+  _import_scheme
+  _set_color_preset
+  _set_font
+  _override_plist
 }
 
-# manual-installation
-set_font_manually() {
-  set_font
+install_color_preset_and_font_manually() {
+  install_color_preset_and_font
 }
+
+check_install_color_preset_and_font() {
+  is_our_custom_color_and_font=$(defaults read com.googlecode.iterm2 "$defaults_is_our_custom_color_and_font" 2>/dev/null)
+
+  if [[ "$is_our_custom_color_and_font" ]]; then
+    if [[ "$is_our_custom_color_and_font" == 1 ]]; then
+      msg_found "Installed"
+      return 0
+    fi
+  fi
+  msg_not_found "Not Installed"
+}
+
+# OLD FUNCTIONS:
+# manual-installation-check
+#check_install_color_preset() {
+#  color_preset=$(defaults read com.googlecode.iterm2 "$defaults_color_preset_key" 2>/dev/null)
+#
+#  if [[ "$color_preset" ]]; then
+#    if [[ "$color_preset" == "$defaults_color_preset_value" ]]; then
+#      msg_found "Installed"
+#      return 0
+#    fi
+#  fi
+#  msg_not_found "Not Installed"
+#}
+
+# manual-installation-check
+#check_set_font() {
+#  bookmark_normal_font=$(/usr/libexec/PlistBuddy -c "Print :'New Bookmarks':0:'Normal Font'" "$iterm2_plist" 2>/dev/null)
+#  if [[ "$bookmark_normal_font" ]]; then
+#    if [[ "$bookmark_normal_font" == "$meslo_font_name" ]]; then
+#      msg_found "Installed"
+#    else
+#      msg_not_found "Not Installed"
+#    fi
+#  else
+#    msg_not_found "Not Installed"
+#  fi
+#}
