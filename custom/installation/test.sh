@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 
-#todo FIRST : iterm color settings doesnt work in manual install
 
-#todo FIRST : split up Xtools and brew, then, as 3rth...when installing X, call those 2 also
-
-
-#todo install warp test
-#todo install iterm2 test
-#todo check variables and documnettaion urrl
 #todo add reamMe with documentation
-##TODO: install with brew  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+##TODO: install with brew /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+##TODO: copy first latest brew ? install with brew /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 ##TODO: Add jetbrains config?
 ##TODO: Add tree command?
@@ -17,8 +11,8 @@
 ##TODO: Add homebrew command?
 
 
-
-ZSH_INSTALL="$ZSH/custom/installation"
+ZSH_CUSTOM="$HOME/.oh-my-zsh/custom/"
+ZSH_INSTALL="$HOME/.oh-my-zsh/custom/installation"
 
 ###########
 # IMPORTS #
@@ -47,7 +41,6 @@ init
 
 
 
-#color_preset_path="$ZSH/Desktop/Custom.itermcolors"
 color_preset_path="$HOME/Desktop/custom.plist"
 color_preset_name="Custom"
 iterm2_plist="$HOME/Library/Preferences/com.googlecode.iterm2.plist"

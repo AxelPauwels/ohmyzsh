@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+ZSH_CUSTOM="$HOME/.oh-my-zsh/custom/"
+
 import_schema_exists() {
   schema_name="Custom.itermcolors"
-  destination_schema_file="$ZSH/custom/schemes/$schema_name" # downloaded script uses this '/schemes/' directory
+  destination_schema_file="$ZSH_CUSTOM/schemes/$schema_name" # downloaded script uses this '/schemes/' directory
 
   if file_exists "$destination_schema_file"; then
     return 0 # exist
