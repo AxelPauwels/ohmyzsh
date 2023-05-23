@@ -1,11 +1,10 @@
-# Temp documentation:
-## installation
+## Installation
 ### Download repository
-```shell
-git clone https://github.com:AxelPauwels/ohmyzsh.git ~/.oh-my-zsh
+```sh
+git clone https://github.com/AxelPauwels/ohmyzsh.git ~/.oh-my-zsh
 ```
 ### Main Install
-```shell
+```sh
 ~/.oh-my-zsh/custom/installation/install.sh
 ```
 Full or Partial installation of:
@@ -20,15 +19,15 @@ Full or Partial installation of:
 9. Zshrc
 
 ### Install More
-```shell
+```sh
 ~/.oh-my-zsh/custom/installation/install-more.sh
 ```
 1. Pyenv
 2. Cursor speed
 3. GitHub Cli
 
-### Configure your git-prompt
-Note: Currently not yet for Warp. (They are working on it)
+### Configure prompt
+_Note: Currently not for Warp yet. (They are working on it)_
 ```shell
 ~/.oh-my-zsh/custom/installation/configure-powerlevel.sh
 ```
