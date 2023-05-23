@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-ZSH_INSTALL="$ZSH/custom/installation"
+ZSH_CUSTOM="$HOME/.oh-my-zsh/custom/"
+ZSH_INSTALL="$HOME/.oh-my-zsh/custom/installation"
 
 ###########
 # IMPORTS #

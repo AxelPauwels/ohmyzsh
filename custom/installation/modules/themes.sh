@@ -16,7 +16,7 @@ _install_powerlevel10k() {
       msg_not_found "Not found"
 
       msg_searching "Installing powerlevel10k theme"
-      cp -R "$ZSH_INSTALL/resources/themes/powerlevel10k" "$ZSH/custom/themes"
+      cp -R "$ZSH_INSTALL/resources/themes/powerlevel10k" "$ZSH_CUSTOM/themes"
       msg_found "Installed"
     else
       msg_found "powerlevel10k theme already installed"
@@ -64,7 +64,7 @@ _install_agnoster() {
       msg_not_found "Not found"
 
       msg_searching "Installing agnoster theme"
-      cp "$ZSH_INSTALL/resources/themes/$agnoster_file_name" "$ZSH/custom/themes"
+      cp "$ZSH_INSTALL/resources/themes/$agnoster_file_name" "$ZSH_CUSTOM/themes"
       msg_found "Installed"
     else
       msg_found "agnoster theme already installed"

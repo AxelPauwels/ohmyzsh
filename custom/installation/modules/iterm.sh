@@ -7,7 +7,7 @@ meslo_font_size=13 #keep odd number here
 
 color_preset_name='Custom'
 color_preset_file_name="$color_preset_name.itermcolors"
-color_preset_file_path="$ZSH/custom/schemes/$color_preset_file_name"
+color_preset_file_path="$ZSH_CUSTOM/schemes/$color_preset_file_name"
 
 defauls_color_preset_key="Color Preset"         #just to keep track of it
 defauls_color_preset_value="$color_preset_name" #just to keep track of it
@@ -84,18 +84,18 @@ _import_scheme() {
     msg_not_found "Not Found"
 
     msg_searching "Searching for destination directory"
-    if ! dir_exists "$ZSH/custom/schemes"; then
+    if ! dir_exists "$ZSH_CUSTOM/schemes"; then
       msg_not_found "Not Found"
 
       msg_searching "Creating destination directory"
-      mkdir "$ZSH/custom/schemes/"
+      mkdir "$ZSH_CUSTOM/schemes/"
       msg_found "Created"
     else
       msg_found "Found"
     fi
 
     msg_searching "Searching for scheme file"
-    if ! file_exists "$ZSH/custom/schemes/$color_preset_file_name"; then
+    if ! file_exists "$ZSH_CUSTOM/schemes/$color_preset_file_name"; then
       msg_not_found "Not Found"
 
       msg_searching "Copying schemes before importing"
@@ -103,11 +103,11 @@ _import_scheme() {
         msg_not_found "No schemes found to import"
       else
         msg_searching "Copying schemes"
-        cp "$ZSH_INSTALL/resources/iterm/color-preset/$color_preset_file_name" "$ZSH/custom/schemes/"
+        cp "$ZSH_INSTALL/resources/iterm/color-preset/$color_preset_file_name" "$ZSH_CUSTOM/schemes/"
         msg_found "Copied"
       fi
       msg_searching "Importing schemes"
-      import_schema "$ZSH/custom/schemes/iterm/color-preset/$color_preset_file_name"
+      import_schema "$ZSH_CUSTOM/schemes/iterm/color-preset/$color_preset_file_name"
       msg_found "Imported"
     else
       msg_found "Found"
