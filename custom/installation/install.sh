@@ -59,39 +59,38 @@ installationOverview() {
   fi
 
   if $MOD_ITERM; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(4) iTerm color settings " || echo "iTerm color settings ")
+    message=$([ $installationOverviewWithOptions == true ] && echo "(4) iTerm color & font settings " || echo "iTerm color & font settings ")
     msg_inline "$message"
 
-    check_install_color_preset
-  fi
-
-  if $MOD_ITERM; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(5) iTerm font settings " || echo "iTerm font settings ")
-    msg_inline "$message"
-
-    check_set_font
+    check_install_color_preset_and_font
   fi
 
   if $MOD_THEMES; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(6) Theme Powerlevel10k " || echo "Theme Powerlevel10k ")
+    message=$([ $installationOverviewWithOptions == true ] && echo "(5) Theme Powerlevel10k " || echo "Theme Powerlevel10k ")
     msg_inline "$message"
 
     check_install_theme_pk10
   fi
 
   if $MOD_THEMES; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(7) Theme Agnoster " || echo "Theme Agnoster ")
+    message=$([ $installationOverviewWithOptions == true ] && echo "(6) Theme Agnoster " || echo "Theme Agnoster ")
     msg_inline "$message"
 
     check_install_theme_agnoster
   fi
 
   if $MOD_WARP; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(8) Warp " || echo "Warp ")
+    message=$([ $installationOverviewWithOptions == true ] && echo "(7) Warp " || echo "Warp ")
     msg_inline "$message"
 
     check_install_warp
   fi
+
+  #todo Add here warp color & font settings
+#    if $MOD_ITERM; then
+#      message=$([ $installationOverviewWithOptions == true ] && echo "(8) empty " || echo "empty ")
+#      msg_inline "$message"
+#    fi
 
   if $MOD_ZSHRC; then
     message=$([ $installationOverviewWithOptions == true ] && echo "(9) Zshrc " || echo "Zshrc ")
@@ -99,6 +98,12 @@ installationOverview() {
 
     check_override_zshrc_file
   fi
+}
+
+restartYourTerminalMessage() {
+    msg_italic "Restart your terminal to load all changes (certainly if your font has changed)"
+    msg_italic "Install more stuff: ~/.oh-my-zsh/custom/installation/install-more.sh"
+    msg_italic "Configure your own prompt: ~/.oh-my-zsh/custom/installation/configure.sh"
 }
 
 showInstallationMessage() {
@@ -152,17 +157,15 @@ if $IsFullInstall; then
   if $MOD_FONTS; then install_fonts; fi
   if $MOD_ITERM; then
     install_iterm
-    install_color_preset
-    set_font
+    install_color_preset_and_font
   fi
   if $MOD_THEMES; then install_themes; fi
   if $MOD_WARP; then install_warp; fi
   if $MOD_ZSH; then override_zshrc_file; fi
 
   new_line
-  msg_warning "Please restart your terminal to load all changes (certainly if your font has changed)"
-  msg_italic "You can configure your own prompt by running ~/.oh-my-zsh/custom/installation/configure.sh"
-fi
+  restartYourTerminalMessage
+  fi
 
 # MANUAL installation
 showManualInstallationMessage() {
@@ -190,23 +193,23 @@ if ! $IsFullInstall; then
       new_line
       ;;
     4)
-      install_color_preset_manually
+      install_color_preset_and_font_manually
       new_line
       ;;
     5)
-      set_font_manually
-      new_line
-      ;;
-    6)
       install_theme_pk10_manually
       new_line
       ;;
-    7)
+    6)
       install_theme_agnoster_manually
       new_line
       ;;
-    8)
+    7)
       install_warp_manually
+      new_line
+      ;;
+    8)
+      # todo add warp color & font settings?
       new_line
       ;;
     9)
@@ -214,6 +217,7 @@ if ! $IsFullInstall; then
       new_line
       ;;
     q | Q)
+      restartYourTerminalMessage
       exit
       ;;
     *)

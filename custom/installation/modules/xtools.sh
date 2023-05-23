@@ -15,8 +15,8 @@ install_xcode_tools() {
   msg_installed "Xcode tools installed"
 }
 
-check_install_xcode_tools(){
-   if command_exists xcode-select; then
+check_install_xcode_tools() {
+  if command_exists xcode-select; then
     msg_found "Installed"
   else
     msg_not_found "Not installed"
