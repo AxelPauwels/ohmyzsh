@@ -97,10 +97,10 @@ prompt_context() {
   #
   # Updated:
 
-  prompt_segment black default "%(!.%{%F{yellow}%}.)%K{black}"
+  prompt_segment default white "%(!.%{%K{yellow}%}.)"
 
   if [[ -n "$SSH_CLIENT" ]]; then
-    prompt_segment black default "%(!.%{%F{yellow}%}.)%n@%m"
+    prompt_segment black yellow "%(!.%{%F{yellow}%}.)%n@%m"
   fi
 }
 
