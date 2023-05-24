@@ -80,7 +80,6 @@ install_themes() {
   _install_agnoster
 }
 
-# manual-installation-check
 check_install_theme_pk10() {
   p10k_theme_path="$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
 
@@ -91,12 +90,10 @@ check_install_theme_pk10() {
   fi
 }
 
-# manual-installation
 install_theme_pk10_manually() {
   _install_powerlevel10k
 }
 
-# manual-installation-check
 check_install_theme_agnoster() {
   agnoster_theme_path="$HOME/.oh-my-zsh/custom/themes/$agnoster_file_name"
 
@@ -107,7 +104,6 @@ check_install_theme_agnoster() {
   fi
 }
 
-# manual-installation
 install_theme_agnoster_manually() {
   _install_agnoster
 }

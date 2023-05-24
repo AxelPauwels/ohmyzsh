@@ -7,6 +7,7 @@ new_line() {
 msg_inline() {
   echo -en "$*" >&2
 }
+
 msg() {
   echo -e "$*" >&2
 }

@@ -1,46 +1,70 @@
-## Installation
+# Installation
 
-
-
-### Prerequisites
+## Prerequisites
 - A Unix-like operating system: macOS, Linux, BSD. 
 - [Zsh](https://www.zsh.org) should be installed (v4.3.9 or more recent is fine but we prefer 5.0.8 and newer). If not pre-installed (run `zsh --version` to confirm), check the following wiki instructions here: [Installing ZSH](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH)
 - `Xcode CLI tools` should be installed
 - `git` should be installed (recommended v2.4.11 or higher)
 
-### Download repository
+## Getting started
+Download the resources:
 ```sh
 git clone https://github.com/AxelPauwels/ohmyzsh.git ~/.oh-my-zsh
 ```
-
-### Basic Install
+Run one of these scripts:
 ```sh
 ~/.oh-my-zsh/custom/installation/install.sh
 ```
-Full or Partial installation of:
-1. Zsh
-2. Fonts
-3. iTerm
-4. iTerm color settings
-5. iTerm font settings
-6. Theme Powerlevel10k
-7. Theme Agnoster
-8. Warp
-9. Zshrc
-
-### Install More Stuff
 ```sh
 ~/.oh-my-zsh/custom/installation/install-more.sh
 ```
-1. Pyenv
-2. Cursor speed
-3. GitHub Cli
-
-### Configure prompt
-_Note: Currently not for Warp yet. (They are working on it)_
-```shell
+```sh
 ~/.oh-my-zsh/custom/installation/configure-powerlevel.sh
 ```
+
+### Install.sh (Full or Partial install)
+#### Zsh
+_Just checks if zsh is installed. The installation of zsh is not developed yet_
+
+#### Fonts
+_Installs fonts to `~/Library/Fonts`. This will install `MesloLGS NF Regular` (recommended for powerlevelp10) and `Powerline` font-package._
+
+_The powerline fonts-packages contains: 3270, Anonymice Powerline, Arimo for Powerline, Cousine for Powerline, DejaVu Sans Mono for Powerline, Droid Sans Mono for Powerline, Go Mono for Powerline, FuraMono-Regular Powerline, Go Mono for Powerline, Hack-Bold, Meslo LG for Powerline, MesloLGS NF, Monofur for Powerline, Noto Mono for Powerline, ProFont For Powerline, Roboto Mono for Powerline, Source Code Pro for Powerline, Space Mono for Powerline, SpaceMono-Bold, Symbol Neu for Powerline, Tinos for Powerline, Ubuntu Mono derivative Powerline,_
+
+#### iTerm2
+_Installs iTerm2 by `brew install --cask iterm2`. If brew is not installed, this will be installed before installing Warp._
+
+#### iTerm2 color & font settings
+_Sets the font to `MesloLGS NF Regular`, size to `13` (always use odd values here) and installs and sets our `Custom` color preset._
+
+_These values can be found at iTerm2 > Settings > Profiles > Colors | Text_
+
+#### Theme Powerlevel10k
+_Installs the Powerlevel10k theme with configuration wizard. Warp does not support this yet. [See Warp-custom-prompt-compatibility](https://docs.warp.dev/features/prompt#custom-prompt-compatibility-table)_
+
+#### Theme Agnoster
+#### Warp
+_Installs Warp by `brew install --cask warp`. If brew is not installed, this will be installed before installing Warp._
+
+#### Warp Theme 'Custom'
+_After installing this you schould set some preferences._
+_Warp > Settings > Appearence > Click on 'current theme' > Select at bottom 'Custom' > click check-icon_
+_Warp > Settings > Features > Session > Honor user's custom prompt (PS1)_
+
+#### Zshrc
+_Overrides ~/.zshrc file. (Note: Before overriding, there will be a backup file created of the existing `~/.zshrc` to `~/.zshrc.old`)_
+
+### Install-more.sh
+Xtools 
+Homebrew
+Pyenv
+Mac Cursor speed
+Mac Show hidden files in Finder (under construction)
+GitHub Cli
+Command 'tree'
+
+### configure-powerlevel.sh
+_Note: Currently not for Warp yet. (They are working on it)_
 
 ---
 

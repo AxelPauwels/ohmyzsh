@@ -34,7 +34,6 @@ install_iterm() {
   msg_installed "iTerm2 installed"
 }
 
-# manual-installation-check
 check_install_iterm() {
   if app_exists iTerm; then
     msg_found "Installed"
@@ -43,7 +42,6 @@ check_install_iterm() {
   fi
 }
 
-# manual-installation
 install_iterm_manually() {
   install_iterm
 }
@@ -220,7 +218,6 @@ check_install_color_preset_and_font() {
 }
 
 # OLD FUNCTIONS:
-# manual-installation-check
 #check_install_color_preset() {
 #  color_preset=$(defaults read com.googlecode.iterm2 "$defaults_color_preset_key" 2>/dev/null)
 #
@@ -233,7 +230,6 @@ check_install_color_preset_and_font() {
 #  msg_not_found "Not Installed"
 #}
 
-# manual-installation-check
 #check_set_font() {
 #  bookmark_normal_font=$(/usr/libexec/PlistBuddy -c "Print :'New Bookmarks':0:'Normal Font'" "$iterm2_plist" 2>/dev/null)
 #  if [[ "$bookmark_normal_font" ]]; then

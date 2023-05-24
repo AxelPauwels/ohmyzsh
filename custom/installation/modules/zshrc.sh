@@ -28,7 +28,6 @@ override_zshrc_file() {
   msg_installed "zshrc done"
 }
 
-# manual-installation-check
 check_override_zshrc_file() {
   zshrcIsUpToDate=true
   zshrcIsUpToDateMessage="Seems up-to-date (Just checked your themes)"
@@ -74,7 +73,6 @@ check_override_zshrc_file() {
   fi
 }
 
-# manual-installation
 override_zshrc_file_manually() {
   override_zshrc_file
 }

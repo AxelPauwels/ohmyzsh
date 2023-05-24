@@ -17,7 +17,6 @@ install_zsh() {
   fi
 }
 
-# manual-installation-check
 check_install_zsh() {
   if command_exists zsh; then
     msg_found "Installed"
@@ -26,7 +25,6 @@ check_install_zsh() {
   fi
 }
 
-# manual-installation
 install_zsh_manually() {
   msg_italic "Currently not developed yet. You can install it here:"
   msg_inline "URL: "
