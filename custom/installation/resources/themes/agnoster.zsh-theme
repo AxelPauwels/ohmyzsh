@@ -86,10 +86,21 @@ prompt_end() {
 ### Prompt components
 # Each component will draw itself, and hide itself if no information needs to be shown
 
+
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
-  if [[ "$USERNAME" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
-    prompt_segment black default "%(!.%{%F{yellow}%}.)%n@%m"
+  # Updated by axel here: set-user-prompt-to-apple-icon
+  # original:
+  # if [[ "$USERNAME" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
+  #   prompt_segment black default "%(!.%{%F{yellow}%}.)%n@%m"
+  # fi
+  #
+  # Updated:
+
+  prompt_segment default white "%(!.%{%K{yellow}%}.)"
+
+  if [[ -n "$SSH_CLIENT" ]]; then
+    prompt_segment black yellow "%(!.%{%F{yellow}%}.)%n@%m"
   fi
 }
 

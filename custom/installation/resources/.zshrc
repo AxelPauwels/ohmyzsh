@@ -145,5 +145,9 @@ POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
 # export path to use in zsh
 export PATH="/usr/local/sbin:$PATH"
 
+# set DEFAULT_USER to your name, default by agnoster (or other zsh-themes ?) this will be ignored:
+# (in agnoster theme... if ( $USER != $DEFAULT_USER) -> omit this part of prompt)
+#export DEFAULT_USER="$(whoami)" #Currently disabled because i updated the agnoster file (see "set-user-prompt-to-apple-icon")
+
 # should be as last
 source $ZSH/oh-my-zsh.sh
