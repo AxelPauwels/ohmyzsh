@@ -25,8 +25,8 @@ if $MOD_HOMEBREW; then chmod 755 "$ZSH_INSTALL"/modules/homebrew.sh && source "$
 if $MOD_PYENV; then chmod 755 "$ZSH_INSTALL"/modules/pyenv.sh && source "$ZSH_INSTALL"/modules/pyenv.sh; fi
 if $MOD_MAC; then chmod 755 "$ZSH_INSTALL"/modules/mac.sh && source "$ZSH_INSTALL"/modules/mac.sh; fi
 if $MOD_GITHUB_CLI; then chmod 755 "$ZSH_INSTALL"/modules/github-cli.sh && source "$ZSH_INSTALL"/modules/github-cli.sh; fi
-
 if $MOD_WARP; then chmod 755 "$ZSH_INSTALL"/modules/warp.sh && source "$ZSH_INSTALL"/modules/warp.sh; fi
+if $MOD_COMMANDS; then chmod 755 "$ZSH_INSTALL"/modules/commands.sh && source "$ZSH_INSTALL"/modules/commands.sh; fi
 
 ###########
 # PROGRAM #
@@ -39,10 +39,10 @@ showInstallationMessage() {
     check_install_xcode_tools
   fi
 
-    if $MOD_HOMEBREW; then
-      msg_inline "(2) Homebrew "
-      check_install_brew
-    fi
+  if $MOD_HOMEBREW; then
+    msg_inline "(2) Homebrew "
+    check_install_brew
+  fi
 
   if $MOD_PYENV; then
     msg_inline "(3) Pyenv "
@@ -50,14 +50,22 @@ showInstallationMessage() {
   fi
 
   if $MOD_MAC; then
-    msg_inline "(4) Cursor speed "
+    msg_inline "(4) Mac Cursor speed "
     check_install_keyrepeat
   fi
+  # todo: add this
+  #  if $MOD_MAC; then
+  #    msg_inline "(5) Mac Show hidden files in Finder"
+  #    check_install_keyrepeat
+  #  fi
 
   if $MOD_GITHUB_CLI; then
     msg_inline "(6) GitHub CLI "
     check_install_github_cli
   fi
+
+  msg_inline "(7) Command 'tree' "
+  check_install_tree_command
 
   msg_dimmed "(q) Quit"
 }
@@ -84,12 +92,17 @@ while true; do
     new_line
     ;;
 
-   5)
-      echo "todo"
-      new_line
-      ;;
+  5)
+    echo "todo"
+    new_line
+    ;;
   6)
     install_github_cli
+    new_line
+    ;;
+
+  7)
+    install_tree_command
     new_line
     ;;
   q | Q)

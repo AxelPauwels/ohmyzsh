@@ -116,6 +116,9 @@ plugins=()
 # default editor
 export EDITOR=/usr/bin/nano
 
+#default prompt
+export DEFAULT_USER="$(whoami)"
+
 # set theme p10k (currently not supported by Warp, so use agnoster for warp)
 if [[ $TERM_PROGRAM == "WarpTerminal" ]]; then
   ZSH_THEME="agnoster"
@@ -138,6 +141,8 @@ fi
 # Disable the auto-p10k-configure script on start up
 POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
 
+
+# export path to use in zsh
 export PATH="/usr/local/sbin:$PATH"
 
 # should be as last

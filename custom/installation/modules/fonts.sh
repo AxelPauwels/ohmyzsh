@@ -10,14 +10,23 @@ install_fonts() {
     msg_searching "Installing Fonts"
 
     msg_searching "Installing Fonts > MesloLGS"
-    cp -R "$ZSH_INSTALL/resources/fonts/MesloLGS/"* "$HOME/Library/Fonts"
+    if ! file_exists "$HOME/Library/Fonts/MesloLGS\ NF\ Regular.ttf"; then
+      cp -R "$ZSH_INSTALL/resources/fonts/MesloLGS/"* "$HOME/Library/Fonts"
+    fi
+    msg_found "MesloLGS installed"
+
+    msg_searching "Installing Fonts > Powerline"
+    if ! file_exists "$HOME/Library/Fonts/Source\ Code\ Pro\ for\ Powerline.otf"; then
+      source "$ZSH_INSTALL//resources/fonts/Powerline/install.sh"
+    fi
+    msg_found "Powerline installed"
+
     msg_installed "Fonts installed"
   else
     msg_error "Error: $HOME/Library/Fonts does not exist"
   fi
 }
 
-# manual-installation-check
 check_install_fonts() {
   font_name="MesloLGS NF Regular"
   font_path="$HOME/Library/Fonts/$font_name.ttf"
@@ -29,7 +38,6 @@ check_install_fonts() {
   fi
 }
 
-# manual-installation
 install_fonts_manually() {
   install_fonts
 }

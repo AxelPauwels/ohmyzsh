@@ -28,11 +28,14 @@ init() {
   if $MOD_ZSH; then chmod 755 "$ZSH_INSTALL"/modules/zsh.sh && source "$ZSH_INSTALL"/modules/zsh.sh; fi
   if $MOD_FONTS; then chmod 755 "$ZSH_INSTALL"/modules/fonts.sh && source "$ZSH_INSTALL"/modules/fonts.sh; fi
   if $MOD_ITERM; then
-    chmod 755 "$ZSH_INSTALL"/modules/iterm.sh && source "$ZSH_INSTALL"/modules/iterm.sh;
-    chmod 755 "$ZSH_INSTALL"/modules/iterm-import-scheme.sh && source "$ZSH_INSTALL"/modules/iterm-import-scheme.sh;
+    chmod 755 "$ZSH_INSTALL"/modules/iterm.sh && source "$ZSH_INSTALL"/modules/iterm.sh
+    chmod 755 "$ZSH_INSTALL"/modules/iterm-import-scheme.sh && source "$ZSH_INSTALL"/modules/iterm-import-scheme.sh
   fi
   if $MOD_THEMES; then chmod 755 "$ZSH_INSTALL"/modules/themes.sh && source "$ZSH_INSTALL"/modules/themes.sh; fi
-  if $MOD_WARP; then chmod 755 "$ZSH_INSTALL"/modules/warp.sh && source "$ZSH_INSTALL"/modules/warp.sh; fi
+  if $MOD_WARP; then
+    chmod 755 "$ZSH_INSTALL"/modules/warp.sh && source "$ZSH_INSTALL"/modules/warp.sh;
+    chmod 755 "$ZSH_INSTALL"/resources/warp/themes/installable-custom-warp-theme.sh;
+  fi
   if $MOD_ZSHRC; then chmod 755 "$ZSH_INSTALL"/modules/zshrc.sh && source "$ZSH_INSTALL"/modules/zshrc.sh; fi
 }
 
@@ -86,11 +89,12 @@ installationOverview() {
     check_install_warp
   fi
 
-  #todo Add here warp color & font settings
-#    if $MOD_ITERM; then
-#      message=$([ $installationOverviewWithOptions == true ] && echo "(8) empty " || echo "empty ")
-#      msg_inline "$message"
-#    fi
+  if $MOD_ITERM; then
+    message=$([ $installationOverviewWithOptions == true ] && echo "(8) Warp theme " || echo "Warp theme ")
+    msg_inline "$message"
+
+    check_install_warp_theme
+  fi
 
   if $MOD_ZSHRC; then
     message=$([ $installationOverviewWithOptions == true ] && echo "(9) Zshrc " || echo "Zshrc ")
@@ -101,9 +105,9 @@ installationOverview() {
 }
 
 restartYourTerminalMessage() {
-    msg_italic "Restart your terminal to load all changes (certainly if your font has changed)"
-    msg_italic "Install more stuff: ~/.oh-my-zsh/custom/installation/install-more.sh"
-    msg_italic "Configure your own prompt: ~/.oh-my-zsh/custom/installation/configure.sh"
+  msg_italic "Restart your terminal to load all changes (certainly if your font has changed)"
+  msg_italic "Install more stuff: ~/.oh-my-zsh/custom/installation/install-more.sh"
+  msg_italic "Configure your own prompt: ~/.oh-my-zsh/custom/installation/configure.sh"
 }
 
 showInstallationMessage() {
@@ -118,6 +122,12 @@ showInstallationMessage() {
     msg_dimmed "(q) Quit"
     InstallTextIsShown=true
   fi
+}
+
+showManualInstallationMessage() {
+  msg_title "What do you want to install/reinstall?"
+  installationOverview
+  msg_dimmed "(q) Quit"
 }
 
 ###########
@@ -160,20 +170,17 @@ if $IsFullInstall; then
     install_color_preset_and_font
   fi
   if $MOD_THEMES; then install_themes; fi
-  if $MOD_WARP; then install_warp; fi
+  if $MOD_WARP; then
+    install_warp
+    install_warp_theme
+  fi
   if $MOD_ZSH; then override_zshrc_file; fi
 
   new_line
   restartYourTerminalMessage
-  fi
+fi
 
 # MANUAL installation
-showManualInstallationMessage() {
-  msg_title "What do you want to install/reinstall?"
-  installationOverview
-  msg_dimmed "(q) Quit"
-}
-
 if ! $IsFullInstall; then
   while true; do
     showManualInstallationMessage
@@ -209,7 +216,7 @@ if ! $IsFullInstall; then
       new_line
       ;;
     8)
-      # todo add warp color & font settings?
+      install_warp_theme_manually
       new_line
       ;;
     9)
