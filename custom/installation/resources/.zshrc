@@ -145,9 +145,42 @@ POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
 # export path to use in zsh
 export PATH="/usr/local/sbin:$PATH"
 
+# export DEFAULT_USER for custom prompt
 # set DEFAULT_USER to your name, default by agnoster (or other zsh-themes ?) this will be ignored:
 # (in agnoster theme... if ( $USER != $DEFAULT_USER) -> omit this part of prompt)
 #export DEFAULT_USER="$(whoami)" #Currently disabled because i updated the agnoster file (see "set-user-prompt-to-apple-icon")
+
+# export for fixing 'missing python command', since now it's pyhton3) by default on mac
+# alias python='python3' (doesn't seems to work anymore)
+eval "$(pyenv init --path)"
+
+# export for using nvm
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh
+# when changing directory... check if there is an nvmrc file.. if so... change version directly
+autoload -U add-zsh-hook
+
+load-nvmrc() {
+  local nvmrc_path
+  nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version
+    nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
+      nvm use
+    fi
+  elif [ -n "$(PWD=$OLDPWD nvm_find_nvmrc)" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
 
 # should be as last
 source $ZSH/oh-my-zsh.sh
