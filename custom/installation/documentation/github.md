@@ -52,6 +52,19 @@ IdentitiesOnly yes
 
 Notice here also the usernames in the Hosts
 
+### Cloning a repo now...
+Now we have to add also the username to the clone command:
+
+First:
+```shell
+git@github.com:ravago-sdc/wms-front.git
+```
+
+Now with username:
+```shell
+git@github.com-axel-pauwels_ravago:ravago-sdc/wms-front.git wms-front
+```
+
 ## Create GitHub PAT (Personal Access Tokens)
 
 Could be usefull for GitHubCli for example.
