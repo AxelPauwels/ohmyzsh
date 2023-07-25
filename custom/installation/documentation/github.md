@@ -2,9 +2,12 @@
 
 ## Multiple ssh keys
 
+In a nutshell: choose your own Host-name and map these Host's to your own settings in ~/.git/config
+
 See more [here](https://gist.github.com/Jonalogy/54091c98946cfe4f8cdab2bea79430f9)
 
 ### Update local git-config files
+(Update existing repo upstreams with CLI command [here](#update-a-existing-repo))
 
 Example `~/Project-a/.git/config`
 
@@ -13,11 +16,11 @@ Example `~/Project-a/.git/config`
     name = axel-pauwels_ravago
     email = axel.pauwels@ravago.com
 [remote "origin"]
-    url = git@github.com-axel-pauwels_ravago:ravago-sdc/ims-office-front.git
+    url = git@my-custom-host-name:ravago-sdc/ims-office-front.git
     fetch = +refs/heads/*:refs/remotes/origin/*
 ```
 
-Notice the `-axel-pauwels_ravago` in the url (which is your GitHub username)!
+Notice that we've changed the default `git@github.com` to `git@my-custom-host-name` in the url
 
 Example `~/Project-b/.git/config`
 
@@ -30,39 +33,58 @@ Example `~/Project-b/.git/config`
     fetch = +refs/heads/*:refs/remotes/origin/*
 ```
 
-Notice the `-AxelPauwels` in the url (which is your GitHub username)!
+Notice the `-AxelPauwels` in the url
 
 ### Update ssh config file
 
 Example ~/.ssh/config
 
 ```md
-Host github.com-axel-pauwels_ravago
-HostName github.com
-User git
-IdentityFile ~/.ssh/axel_ravago_id_rsa
-IdentitiesOnly yes
+Host my-custom-host-name
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/axel_ravago_id_rsa
+    IdentitiesOnly yes
+    AddKeysToAgent yes
+    ForwardAgent yes
+    UseKeychain yes
 
 Host github.com-AxelPauwels
-HostName github.com
-User git
-IdentityFile ~/.ssh/id_ed25519
-IdentitiesOnly yes
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+    AddKeysToAgent yes
+    ForwardAgent yes
+    UseKeychain yes
 ```
 
-Notice here also the usernames in the Hosts
+Now git actions (pull, push) will be matched to the `Host` and the correct settings wil be used
 
 ### Cloning a repo now...
 Now we have to add also the username to the clone command:
 
 Before:
 ```shell
-git clone git@github.com:ravago-sdc/wms-front.git
+git clone git@github.com:ravago-sdc/wms-front.git wms-front
 ```
 
-Now with username:
+Now with a custom Host:
 ```shell
-git clone git@github.com-axel-pauwels_ravago:ravago-sdc/wms-front.git wms-front
+git clone git@my-custom-host-name:ravago-sdc/wms-front.git wms-front
+```
+
+### Update a existing repo
+Instead of editing the config file at project-x/.git/config you can
+
+Check your remotes:
+```shell
+git remote -v 
+```
+
+And update the upstream:
+```shell
+git remote set-url origin git@my-custom-host-name:ravago-sdc/wms-front.git
 ```
 
 ## Create GitHub PAT (Personal Access Tokens)
