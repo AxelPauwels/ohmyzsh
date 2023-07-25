@@ -22,6 +22,13 @@ Run one of these scripts:
 ~/.oh-my-zsh/custom/installation/configure-powerlevel.sh
 ```
 
+You can add these as aliases later if you want to easy access these installers next time:
+```sh
+alias zshInstall='~/.oh-my-zsh/custom/installation/install.sh'
+alias zshInstallMore='~/.oh-my-zsh/custom/installation/install-more.sh'
+alias zshInstallPowerlevel10k='~/.oh-my-zsh/custom/installation/configure-powerlevel.sh'
+```
+
 ### Install.sh (Full or Partial install)
 #### Zsh
 _Just checks if zsh is installed. The installation of zsh is not developed yet_
