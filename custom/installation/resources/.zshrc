@@ -116,8 +116,11 @@ plugins=()
 # default editor
 export EDITOR=/usr/bin/nano
 
-#default prompt
-export DEFAULT_USER="$(whoami)"
+# default prompt
+# export DEFAULT_USER="$(whoami)" (this still needed? I think I used this to edit Warp + p10k theme ?)
+
+# show prompt "always at the bottom" (should be before p10k instant prompt loading)
+printf '\n%.0s' {1..100}
 
 # set theme p10k (currently not supported by Warp, so use agnoster for warp)
 if [[ $TERM_PROGRAM == "WarpTerminal" ]]; then
@@ -140,7 +143,6 @@ fi
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 # Disable the auto-p10k-configure script on start up
 POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
-
 
 # export path to use in zsh
 export PATH="/usr/local/sbin:$PATH"
