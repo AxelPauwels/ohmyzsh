@@ -55,14 +55,14 @@ Notice here also the usernames in the Hosts
 ### Cloning a repo now...
 Now we have to add also the username to the clone command:
 
-First:
+Before:
 ```shell
-git@github.com:ravago-sdc/wms-front.git
+git clone git@github.com:ravago-sdc/wms-front.git
 ```
 
 Now with username:
 ```shell
-git@github.com-axel-pauwels_ravago:ravago-sdc/wms-front.git wms-front
+git clone git@github.com-axel-pauwels_ravago:ravago-sdc/wms-front.git wms-front
 ```
 
 ## Create GitHub PAT (Personal Access Tokens)
