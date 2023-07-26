@@ -13,7 +13,7 @@ Example `~/Project-a/.git/config`
 
 ```md
 [user]
-    name = axel-pauwels_ravago
+    name = Axel Pauwels (aka the refactorer)
     email = axel.pauwels@ravago.com
 [remote "origin"]
     url = git@my-custom-host-name:ravago-sdc/ims-office-front.git
