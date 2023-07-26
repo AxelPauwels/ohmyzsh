@@ -141,8 +141,10 @@ fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-# Disable the auto-p10k-configure script on start up
-POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+# powerlevel10k settings
+POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true # Disable the auto-p10k-configure script on start up when ~/.p10k.zsh does not exists
+POWERLEVEL9K_PYENV_PROMPT_ALWAYS_SHOW=true
+POWERLEVEL9K_PYENV_SHOW_PYTHON_VERSION=true
 
 # export path to use in zsh
 export PATH="/usr/local/sbin:$PATH"
