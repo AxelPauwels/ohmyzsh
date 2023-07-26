@@ -41,7 +41,7 @@ while true; do
   1)
     rm -rf "$HOME/.p10k.zsh"
     exec zsh
-    msg "If the wizard doesn't start you should probably set 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD' to false at ~/.zshrc config file"
+    msg "If the wizard doesn't start you should comment teh setting 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD' at ~/.zshrc config file"
     break
     ;;
   2)
