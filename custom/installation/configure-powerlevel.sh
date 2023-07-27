@@ -39,9 +39,8 @@ while true; do
   read -p "Option: " choice
   case $choice in
   1)
-    rm -rf "$HOME/.p10k.zsh"
+    rm -rf "$HOME/.p10k.zsh" # Need to be deleted, otherwise the wizard script (p10k configure) will not be started
     exec zsh
-    msg "If the wizard doesn't start you should comment teh setting 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD' at ~/.zshrc config file"
     break
     ;;
   2)
