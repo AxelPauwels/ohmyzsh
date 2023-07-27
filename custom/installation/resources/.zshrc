@@ -144,7 +144,7 @@ fi
 # powerlevel10k: To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 # powerlevel10k: Disable the auto-p10k-configure script on start up when ~/.p10k.zsh does not exists
-POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true zsh
+POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
 # powerlevel10k: customization
 # I added this in p10k.zsh itself at the bottom under section 'OVERRIDES'
 # This is done because when in this file POWERLEVEL9K_* -constants are detected,
