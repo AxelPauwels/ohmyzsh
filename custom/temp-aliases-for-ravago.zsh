@@ -8,6 +8,10 @@ alias zshInstall='~/.oh-my-zsh/custom/installation/install.sh'
 alias zshInstallMore='~/.oh-my-zsh/custom/installation/install-more.sh'
 alias zshInstallPowerlevel10k='~/.oh-my-zsh/custom/installation/configure-powerlevel.sh'
 
+########
+# p10k #
+########
+alias p10kUpdate='git -C ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k pull'
 
 ######
 # cd #
@@ -16,6 +20,7 @@ alias cdWms='cd ~/Ravago/Projects/wms-front'
 alias cdWmsWepApp='cd ~/Ravago/Projects/wms-web-app'
 alias cdIms='cd ~/Ravago/Projects/ims-front'
 alias cdImsOffice='cd ~/Ravago/Projects/ims-office-front'
+alias cdZsh='cd ~/.oh-my-zsh'
 
 ################
 # project: wms #
