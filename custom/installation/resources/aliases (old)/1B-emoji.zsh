@@ -1,8 +1,3 @@
-# File: ~/.oh-my-zsh/custom/1B-emoji.zsh
-# --------------------------------------
-
-
-
 ########
 # INFO #
 ########
@@ -71,8 +66,3 @@ _icon() {
     echo "_icon(): This function requires exact 1 parameter. None or multiple are given."  
   fi
 }
-
-
-
-# End-of-file --------------------------------------------------
-#echo -e "\e[38;5;46m\U2714 \e[38;5;250mEmoji \e[0m"

@@ -1,7 +1,6 @@
 
-# File: ~/.oh-my-zsh/custom/3D-ssh-connections.zsh
-# ------------------------------------------------
-
+# HOME/PROJECTS: MOVIEREADER
+alias readMovies='_aliasCommand "php ~/Documents/Home/Projects/MovieReaderApp/MovieReaderApp/readMovies.php"'
 
 
 #############
@@ -177,6 +176,3 @@ alias sshKeyShow='ls -la ~/.ssh'
 alias sshKeyGenerate=_sshKeyGenerate
 alias sshKeyAddIdentity=_sshKeyAddIdentity
 alias sshKeyCopy=_sskKeyCopy
-
-# End-of-file --------------------------------------------
-#echo "${COLOR_GREEN}${EMOJI_CHECK}${COLOR_GRAY25} SSH Connections${COLOR_RESET}"

@@ -1,8 +1,3 @@
-# File: ~/.oh-my-zsh/custom/1C-colors-and-formats.zsh
-# ---------------------------------------------------
-
-
-
 ########
 # info #
 ########
@@ -284,9 +279,3 @@ _textColor() {
     _messageError "This function expects exactly 2 parameters. Too many are given. ${TEXT_MORE_INFO}"  
   fi
 }
-
-
-
-# End-of-file ---------------------------------------------------------------
-#echo "${COLOR_GREEN}${EMOJI_CHECK}${COLOR_GRAY25} Colors & formats${COLOR_RESET}"
-

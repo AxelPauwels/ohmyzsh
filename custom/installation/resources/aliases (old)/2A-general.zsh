@@ -1,17 +1,3 @@
-# File: ~/.oh-my-zsh/custom/2A-general.zsh
-# ----------------------------------------
-
-
-
-########
-# INFO #
-########
-
-# Functions to use in the terminal are without underscores.
-# Functions with underscores are used by other functions or aliases, in other files (probably higher in the file hierarchy)
-
-
-
 #############
 # FUNCTIONS #
 #############
@@ -124,17 +110,3 @@ findAliases() {
     _messageInfo "Usage example: \"findAliases git\""
   fi
 }
-
-# todo
-#echo "TODO: findFunctions in FunctionGeneral (.oh-my-zsh/custom/2A-general.zsh)"
-# todo
-
-
-findFunctions() {
-  echo "TODO ... "
-}
-
-
-
-# End-of-file --------------------------------------
-#echo "${COLOR_GREEN}${EMOJI_CHECK}${COLOR_GRAY25} General${COLOR_RESET}"

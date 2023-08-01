@@ -1,7 +1,3 @@
-# File: ~/.oh-my-zsh/custom/custom_examples/example-emoji.zsh -----------------------------------------------------------
-
-
-
 ##################
 # EXAMPLE: ICONS #
 ##################
