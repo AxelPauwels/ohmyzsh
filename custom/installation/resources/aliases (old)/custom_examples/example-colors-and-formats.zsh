@@ -1,8 +1,3 @@
-# File: ~/.oh-my-zsh/custom/custom_examples/example-colors-and-formats.zsh
-# ------------------------------------------------------------------------
-
-
-
 ##################################
 # EXAMPLE: COLORS AND FORMATTING #
 ##################################
