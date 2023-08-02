@@ -82,9 +82,10 @@ HIST_STAMPS="yyyy-mm-dd"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-    custom-zsh-base
+    git
+    custom-zsh-base # should be the first because this contains variables
     custom-gh
-    #custom-git
+    custom-git
     custom-npm
     custom-npx
     custom-powerlevel10k

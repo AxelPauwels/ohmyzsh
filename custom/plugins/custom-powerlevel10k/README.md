@@ -34,4 +34,4 @@ path_to_p10k_config_file="${HOME}/.p10k.zsh"
 | Alias          | Command                                                |
 |:---------------|:-------------------------------------------------------|
 | p10kUpdate     | git -C ${path_to_zsh_custom}/themes/powerlevel10k pull |
-| p10kEditConfig | open -a ${editor} ${path_to_p10k_config_file}          |
+| p10kEditConfig | open -a \"${editor}\" ${path_to_p10k_config_file}      |
