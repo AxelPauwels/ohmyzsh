@@ -1,13 +1,16 @@
 # Custom git plugin
 This custom Git plugin contains aliases and functions that I have been using for several years now.
-I supplemented this plugin with aliases and functions from this well-known [git-plugin](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git)
+It's a supplement or an override of the well-known [git-plugin](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git) that I also use.
 
 This plugin provides many [aliases](#aliases) and a few useful [functions](#functions).
 
 To use it, add `custom-git` to the plugins array in your zshrc file:
 
 ```zsh
-plugins=(custom-git)
+plugins=(
+    git 
+    custom-git #load this after plugin 'git' if you also use that one 
+)
 ```
 
 ## Variables

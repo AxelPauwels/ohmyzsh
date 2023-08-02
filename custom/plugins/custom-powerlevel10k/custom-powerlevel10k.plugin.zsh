@@ -11,4 +11,4 @@ alias zshEditPluginPowerlevel10k="open -a \"${editor}\" ${path_to_zsh_custom}/pl
 
 # Aliases
 alias p10kUpdate="git -C ${path_to_zsh_custom}/themes/powerlevel10k pull"
-alias p10kEditConfig="open -a ${editor} ${path_to_p10k_config_file}"
+alias p10kEditConfig="open -a \"${editor}\" ${path_to_p10k_config_file}"

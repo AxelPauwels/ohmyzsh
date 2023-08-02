@@ -31,7 +31,7 @@ path_to_zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 | Alias                   | Command                                                    |
 |:------------------------|:-----------------------------------------------------------|
 | zshReload               | source ${path_to_zshrc}                                    |
-| zshEdit                 | open -a ${editor} ${path_to_zsh}                           |
+| zshEdit                 | open -a \"${editor}\" ${path_to_zsh}                       |
 | zshInstall              | ${path_to_zsh_custom}/installation/install.sh              |
 | zshInstallMore          | ${path_to_zsh_custom}/installation/install-more.sh         |
 | zshInstallPowerlevel10k | ${path_to_zsh_custom}/installation/configure-powerlevel.sh |
