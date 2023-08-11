@@ -4,9 +4,9 @@ editor='IntelliJ IDEA' # An app could be found by command `ls /Applications` wit
 path_to_zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 # Aliases (this plugin)
-alias zshCdPluginZshBase="cd ${path_to_zsh_custom}/plugins/${plugin_name}"
-alias zshShowPluginZshBase="cat ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh"
-alias zshEditPluginZshBase="open -a \"${editor}\" ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh"
+alias zshCdPluginWorkRavago="cd ${path_to_zsh_custom}/plugins/${plugin_name}"
+alias zshShowPluginWorkRavago="cat ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh"
+alias zshEditPluginWorkRavago="open -a \"${editor}\" ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh"
 
 # Aliases
 alias cdWms='cd ~/Ravago/Projects/wms-front'
