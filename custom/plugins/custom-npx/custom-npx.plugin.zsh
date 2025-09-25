@@ -11,6 +11,7 @@ alias zshEditPluginNpx="open -a \"${editor}\" ${path_to_zsh_custom}/plugins/${pl
 # Aliases
 alias nxLintProject='npx nx lint ' #param <nx-project> Example: nxLintProject kernel-shared
 alias nxTestProject='npx nx test ' #param <nx-project> Example: nxTestProject kernel-shared
+alias nxTestProjectWithCodeCoverage='npx nx test --with-coverage --collectCoverage=true' #param <nx-project> Example: nxTestProjectWithCodeCoverage kernel-shared
 alias nxShowProjects='npx nx show projects'
 alias nxShowProjectsServable='npx nx show projects --with-target serve'
 alias nxShowProjectInfo='nx show project ' #param <projectName>

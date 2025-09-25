@@ -19,10 +19,24 @@ alias cdZsh='cd ~/.oh-my-zsh'
 
 # Aliases Project WMS2
 alias wmsGraph='npx nx graph'
-alias wmsCheck='npm run wms:check'
+alias wmsCheck='npm run format:prettier && npm run lint:all-with-warnings && npm run lint:styles'
 alias wmsTest='npm run test'
 alias wmsCheckAndTest='npm run wms:check-and-test'
 alias wmsFormatStyles='npm run format:styles --fix'
 alias wmsFormatPrettier='npm run format:prettier'
 #alias wmsTest='(){ npx nx test $1;}'           ### add a NX projectname after this command like 'npxTest foundation'
 #alias wmsLint='(){ npx nx lint $1 --quiet;}'   ### add a NX projectname after this command like 'npxLint kernel-shared'
+
+# Aliases Open Shift
+alias ocProjects='oc projects'
+alias ocProject='oc project ' # <project_name>
+alias ocGetPods='kubectl get pods'
+alias ocGetPodsAndWatch='kubectl get pods -w' # (watch changes)
+alias ocLogs='kubectl logs' # <pod_name>
+alias ocLogsAndWatch='kubectl logs -f ' # <pod_name> (watch changes)
+alias ocDescribePod='kubectl describe pod' # <pod_name>
+alias ocDescribeDeploy='kubectl describe deploy ' # <deploy_name> (deploy_name = pod name zonder numerieke suffix)
+alias ocEditDeploy='kubectl edit deploy ' # <deploy_name>
+alias ocPortForward='kubectl port-forward db2-0 50000:50000' # (Remote db connectie naar localhost:50000)
+_ocPortForward() { kubectl port-forward "$1" 5005:5005; } # <pod_name> (Remote backend debug)
+alias ocPortForward=_ocPortForward
