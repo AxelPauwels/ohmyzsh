@@ -66,13 +66,13 @@ _Warp > Settings > Features > Session > Honor user's custom prompt (PS1)_
 _Overrides ~/.zshrc file. (Note: Before overriding, there will be a backup file created of the existing `~/.zshrc` to `~/.zshrc.old`)_
 
 ### Install-more.sh
-Xtools 
-Homebrew
-Pyenv
-Mac Cursor speed
-Mac Show hidden files in Finder (under construction)
-GitHub Cli
-Command 'tree'
+- Xtools 
+- Homebrew
+- Pyenv
+- Mac Cursor speed
+- Mac Show hidden files in Finder (under construction)
+- GitHub Cli
+- Command 'tree'
 
 ### configure-powerlevel.sh
 _Note: Currently not for Warp yet. (They are working on it)_
