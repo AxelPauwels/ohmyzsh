@@ -1,4 +1,7 @@
-# Installation
+# Installation Wizards
+<img width="488" height="307" alt="image" src="https://github.com/user-attachments/assets/bf617b2b-8518-4326-915e-951eee894625" />
+
+<img width="470" height="189" alt="Screenshot 2026-08-24 at 16 53 25" src="https://github.com/user-attachments/assets/4fb40f6e-6215-4e68-bd8a-93a3d9e5ee3a" />
 
 ## Prerequisites
 - A Unix-like operating system: macOS, Linux, BSD. 
