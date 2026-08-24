@@ -79,6 +79,10 @@ _Note: Currently not for Warp yet. (They are working on it)_
 
 ---
 
+<br/>
+
+# Initially forked from ohmyzsh
+
 <p align="center"><img src="https://ohmyzsh.s3.amazonaws.com/omz-ansi-github.png" alt="Oh My Zsh"></p>
 
 Check out the official [ohmyzsh](https://github.com/ohmyzsh/ohmyzsh) GitHub Repository for more documentation!
