@@ -8,6 +8,16 @@ command_exists() {
   fi
 }
 
+# Extracts the first version number (e.g. 1.2.3) from a string and prefixes "v".
+# params: any string containing a version number
+extract_version() {
+  local v
+  v="$(printf '%s' "$*" | grep -oE '[0-9]+(\.[0-9]+)+' | head -1)"
+  if [ -n "$v" ]; then
+    printf 'v%s' "$v"
+  fi
+}
+
 app_exists() {
   if command -v "$1" >/dev/null 2>&1 || [[ -d "/Applications/$1.app" ]]; then
     return 0 # exist
@@ -180,7 +190,7 @@ run_action_menu() {
       msg "$eol"
     fi
     for ((i = 0; i < count; i++)); do
-      if [ "$selected" -eq "$i" ]; then marker="(◉)"; else marker="(◯)"; fi
+      if [ "$selected" -eq "$i" ]; then marker="[◉]"; else marker=" ◯ "; fi
       status_line="${_menu_status[$i]}"
       if [ -n "$status_line" ]; then
         msg " $marker ${menu_labels[$i]} $status_line$eol"

@@ -19,7 +19,7 @@ install_zsh() {
 
 check_install_zsh() {
   if command_exists zsh; then
-    msg_found "Installed"
+    msg_found_version "Installed" "$(extract_version "$(zsh --version 2>/dev/null | head -1)")"
   else
     msg_not_found "Not installed"
   fi

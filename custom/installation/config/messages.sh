@@ -54,6 +54,18 @@ msg_not_found() {
   echo -e "${txt_red}${txt_dimmed}${icon_times} $*${txt_reset}" >&2
 }
 
+# for "found" status with an appended version string
+# params: label  version_string
+msg_found_version() {
+  local label="$1"
+  local version="$2"
+  if [ -n "$version" ]; then
+    echo -e "${txt_green}${txt_dimmed}${icon_check} ${label} ${version}${txt_reset}" >&2
+  else
+    echo -e "${txt_green}${txt_dimmed}${icon_check} ${label}${txt_reset}" >&2
+  fi
+}
+
 msg_installed() {
   echo -e "${txt_green}${icon_check} $*${txt_reset}" >&2
 }

@@ -42,7 +42,7 @@ install_pyenv() {
 
 check_install_pyenv() {
   if command_exists pyenv; then
-    msg_found "Installed"
+    msg_found_version "Installed" "$(extract_version "$(pyenv --version 2>/dev/null)")"
   else
     msg_not_found "Not installed"
   fi

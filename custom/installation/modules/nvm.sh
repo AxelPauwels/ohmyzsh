@@ -10,7 +10,7 @@ install_nvm() {
 
 check_install_nvm() {
   if brew list nvm &>/dev/null; then
-    msg_found "Installed"
+    msg_found_version "Installed" "$(brew list --versions nvm 2>/dev/null | head -1)"
   else
     msg_not_found "Not installed"
   fi

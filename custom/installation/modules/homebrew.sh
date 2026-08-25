@@ -69,7 +69,7 @@ install_brew() {
 
 check_install_brew() {
   if command_exists brew; then
-    msg_found "Installed"
+    msg_found_version "Installed" "$(extract_version "$(brew --version 2>/dev/null | head -1)")"
   else
     msg_not_found "Not installed"
   fi
