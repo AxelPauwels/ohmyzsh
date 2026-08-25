@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-
-#todo add reamMe with documentation
-##TODO: install with brew /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-##TODO: copy first latest brew ? install with brew /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-##TODO: Add jetbrains config?
-
 ZSH_CUSTOM="$HOME/.oh-my-zsh/custom/"
 ZSH_INSTALL="$HOME/.oh-my-zsh/custom/installation"
 
