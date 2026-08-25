@@ -20,15 +20,19 @@ _macKeyrepeat() {
     defaults write -g InitialKeyRepeat -int "${2}"
 
     msg_warning "These settings only take effect after you logout and login. Do you want to logout now? (y/n)"
-    read userInput
-    local choice=$(toLower "$userInput")
-
-    if [[ $choice = "y" || $choice = "yes" ]]; then
-      msg_installed "Restarting..."
-      _logoutByUsername $USER
-    elif [[ $choice = "n" || $choice = "no" ]]; then
-      msg_installed "Ok, these settings will take effect next time you login."
-    fi
+    local choice
+    while true; do
+      read -rsn1 userInput
+      choice=$(toLower "$userInput")
+      if [[ $choice = "y" ]]; then
+        msg_installed "Restarting..."
+        _logoutByUsername $USER
+        break
+      elif [[ $choice = "n" ]]; then
+        msg_installed "Ok, these settings will take effect next time you login."
+        break
+      fi
+    done
   else
     msg_error "This function expects exactly 2 parameters. Too few or too many are given."
   fi
@@ -99,6 +103,7 @@ install_keyrepeat() {
   local menu_selected=0
   run_action_menu
   clear
+  menu_action_submenu=1
 }
 
 check_install_keyrepeat() {
@@ -114,6 +119,57 @@ check_install_keyrepeat() {
     keyrepeatName=$(get_keyrepeat_name "$keyRepeat" "$delayUntilRepeat")
 
     msg_found "Installed '$keyrepeatName' ($keyRepeat/$delayUntilRepeat)"
+  else
+    msg_not_found "Not installed"
+  fi
+}
+
+# --- Finder hidden files -----------------------------------------------------
+
+_finder_show_hidden() {
+  backup_defaults com.apple.finder AppleShowAllFiles finder_show_all_files
+  defaults write com.apple.finder AppleShowAllFiles true
+  killall Finder
+  msg_installed "Hidden files are now shown in Finder"
+}
+
+_finder_hide_hidden() {
+  backup_defaults com.apple.finder AppleShowAllFiles finder_show_all_files
+  defaults write com.apple.finder AppleShowAllFiles false
+  killall Finder
+  msg_installed "Hidden files are now hidden in Finder"
+}
+
+install_finder_hidden() {
+  local menu_title="Show or hide hidden files in finder:"
+  local menu_header=""
+  local -a menu_labels=(
+    "Show hidden files in finder"
+    "Hide hidden files in finder"
+  )
+  local -a menu_checks=()
+  local -a menu_actions=(
+    "_finder_show_hidden"
+    "_finder_hide_hidden"
+  )
+  local menu_selected=0
+  run_action_menu
+  clear
+  menu_action_submenu=1
+}
+
+check_install_finder_hidden() {
+  if defaults read com.apple.finder AppleShowAllFiles &>/dev/null; then
+    local value
+    value=$(defaults read com.apple.finder AppleShowAllFiles)
+    case "$(toLower "$value")" in
+    1 | true | yes)
+      msg_found "Installed 'Hidden files shown'"
+      ;;
+    *)
+      msg_found "Installed 'Hidden files hidden'"
+      ;;
+    esac
   else
     msg_not_found "Not installed"
   fi

@@ -37,10 +37,11 @@ menu_labels+=("Zsh");                          menu_checks+=("check_install_zsh"
 menu_labels+=("Fonts");                        menu_checks+=("check_install_fonts");                  menu_actions+=("uninstall_fonts")
 menu_labels+=("iTerm color & font settings");  menu_checks+=("check_install_color_preset_and_font");  menu_actions+=("uninstall_color_preset_and_font")
 menu_labels+=("Theme Powerlevel10k");          menu_checks+=("check_install_theme_pk10");             menu_actions+=("uninstall_theme_pk10")
-menu_labels+=("Prompt Powerlevel10k");         menu_checks+=("status_prompt_pk10");                   menu_actions+=("uninstall_prompt_pk10")
+menu_labels+=("Prompt Powerlevel10k");         menu_checks+=("check_install_prompt_pk10");            menu_actions+=("uninstall_prompt_pk10")
 menu_labels+=("Theme Agnoster");               menu_checks+=("check_install_theme_agnoster");         menu_actions+=("uninstall_theme_agnoster")
 menu_labels+=("zshrc");                        menu_checks+=("status_zshrc");                         menu_actions+=("uninstall_zshrc")
 menu_labels+=("Mac Cursor speed");             menu_checks+=("check_install_keyrepeat");              menu_actions+=("uninstall_keyrepeat")
+menu_labels+=("Mac Finder hidden files");      menu_checks+=("check_install_finder_hidden");          menu_actions+=("uninstall_finder_hidden")
 menu_labels+=("GitHub CLI");                   menu_checks+=("check_install_github_cli");             menu_actions+=("uninstall_github_cli")
 menu_labels+=("Command 'tree'");               menu_checks+=("check_install_tree_command");           menu_actions+=("uninstall_tree_command")
 

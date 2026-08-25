@@ -80,7 +80,7 @@ _import_scheme() {
         msg_found "Copied"
       fi
       msg_searching "Importing schemes"
-      import_schema "$ZSH_CUSTOM/schemes/iterm/color-preset/$color_preset_file_name"
+      ( import_schema "$ZSH_CUSTOM/schemes/iterm/color-preset/$color_preset_file_name" )
       msg_found "Imported"
     else
       msg_found "Found"
@@ -109,13 +109,17 @@ _override_plist() {
   if file_exists "$destination_path"; then
     msg_found "Found"
 
-    msg_searching "Copying existing plist file as backup (~/Library/Preferences/com.googlecode.iterm2.plist.old)"
-    cp "$destination_path" "$destination_path.old"
-    msg_found "Copied"
+    if cmp -s "$source_path" "$destination_path"; then
+      msg_found "Already up-to-date"
+    else
+      msg_searching "Copying existing plist file as backup (~/Library/Preferences/com.googlecode.iterm2.plist.old)"
+      cp "$destination_path" "$destination_path.old"
+      msg_found "Copied"
 
-    msg_searching "Overriding existing plist file"
-    cp "$source_path" "$destination_path"
-    msg_found "Overridden"
+      msg_searching "Overriding existing plist file"
+      cp "$source_path" "$destination_path"
+      msg_found "Overridden"
+    fi
   else
     msg_warning "No plist file found"
 
@@ -149,18 +153,11 @@ _set_color_preset() {
   fi
   msg_installed "Iterm2 color set"
 
-  # use this if script import_schema is NOT used
-  # Import the color scheme using the open command in the background
-  (open "$color_preset_file_path" &)
-
-  # Wait for a short period to ensure the color scheme is imported
-  sleep 1
-
-  # Get the UUID of the imported color scheme
-  color_scheme_uuid=$(defaults read com.googlecode.iterm2 "Custom Color Presets" | awk -v scheme="$color_preset_name" -F" = " '$2 == "\""scheme"\"" { print $1 }')
-
-  # Set the imported color scheme as the default
-  defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "$color_scheme_uuid"
+  # NOTE: the color preset is already imported into the plist by import_schema
+  # (via PlistBuddy). We deliberately do NOT `open` the .itermcolors file here:
+  # doing so asks iTerm to import the very same preset again, which pops up the
+  # modal "Add duplicate color preset?" dialog and disrupts the terminal (it
+  # steals focus and forces a redraw that corrupts the wizard menu). So skip it.
 }
 
 _set_font() {

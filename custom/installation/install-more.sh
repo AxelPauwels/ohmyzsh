@@ -72,6 +72,10 @@ if $MOD_MAC; then
   menu_labels+=("Mac Cursor speed")
   menu_checks+=("check_install_keyrepeat")
   menu_actions+=("install_keyrepeat")
+
+  menu_labels+=("Mac Finder hidden files")
+  menu_checks+=("check_install_finder_hidden")
+  menu_actions+=("install_finder_hidden")
 fi
 
 if $MOD_GITHUB_CLI; then

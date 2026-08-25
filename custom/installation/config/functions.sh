@@ -198,15 +198,49 @@ run_action_menu() {
       _menu_clear_below
       new_line
       _menu_show_cursor
+      menu_action_submenu=0
       if [ -n "${menu_actions[$selected]:-}" ]; then
         "${menu_actions[$selected]}"
-        msg_dimmed "Done. Continue in menu by using ↑/↓ and Enter or press q to quit."
+        if [ "${menu_action_submenu:-0}" -ne 1 ]; then
+          msg_dimmed "Done. Continue in menu by using ↑/↓ and Enter or press q to quit."
+        fi
       fi
       _menu_hide_cursor
       if [ -n "${menu_checks[$selected]:-}" ]; then
         _menu_status[$selected]="$(${menu_checks[$selected]} 2>&1)"
       fi
       [ "${menu_exit:-0}" -eq 1 ] && break
+      # A submenu action (its own run_action_menu) already ran its own interactive
+      # screen; the user quit it deliberately, so return to this menu immediately
+      # without an extra acknowledgement prompt.
+      if [ "${menu_action_submenu:-0}" -eq 1 ]; then
+        menu_quit=0
+        _menu_reset_screen
+        continue
+      fi
+      # Otherwise the action's output stays on screen until the user presses a
+      # key. That output can be long enough to scroll the terminal, which would
+      # move the menu's home position. So we read the acknowledgement key here
+      # (while the output is still visible) and then do a FULL screen reset before
+      # the loop redraws the menu — otherwise the pinned header lands mid-scroll
+      # and the menu renders garbled/truncated.
+      key=$(read_menu_key)
+      case "$key" in
+      $'\x1b[A')
+        selected=$((selected - 1))
+        [ "$selected" -lt 0 ] && selected=$((count - 1))
+        ;;
+      $'\x1b[B')
+        selected=$((selected + 1))
+        [ "$selected" -ge "$count" ] && selected=0
+        ;;
+      q | Q)
+        menu_quit=1
+        _menu_reset_screen
+        break
+        ;;
+      esac
+      _menu_reset_screen
       ;;
     q | Q)
       menu_quit=1

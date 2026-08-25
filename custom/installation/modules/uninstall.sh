@@ -124,14 +124,6 @@ status_zshrc() {
   fi
 }
 
-status_prompt_pk10() {
-  if [ -f "$HOME/.p10k.zsh" ] && cmp -s "$HOME/.p10k.zsh" "$ZSH_INSTALL/resources/themes/.p10k.zsh"; then
-    msg_found "Installed"
-  else
-    msg_not_found "Not installed"
-  fi
-}
-
 # ----- Theme Agnoster ------------------------------------------------------
 uninstall_theme_agnoster() {
   msg_title "Uninstall Theme Agnoster"
@@ -168,6 +160,14 @@ uninstall_keyrepeat() {
   restore_defaults -g KeyRepeat keyrepeat_key
   restore_defaults -g InitialKeyRepeat keyrepeat_delay
   msg_installed "Mac Cursor speed reset (logout/login to take effect)"
+}
+
+# ----- Mac Finder hidden files ---------------------------------------------
+uninstall_finder_hidden() {
+  msg_title "Uninstall Mac Finder hidden files"
+  restore_defaults com.apple.finder AppleShowAllFiles finder_show_all_files
+  killall Finder 2>/dev/null
+  msg_installed "Finder hidden-files setting reset to its pre-install state"
 }
 
 # ----- GitHub CLI ----------------------------------------------------------

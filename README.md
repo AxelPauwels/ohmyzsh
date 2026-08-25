@@ -1,12 +1,23 @@
 # Installation
 
-Current version: **v1.0.0** (source of truth: [`VERSION`](./VERSION))
+Current version: **v2.0.0** (source of truth: [`VERSION`](./VERSION))
 
 ## Prerequisites
 - A Unix-like operating system: macOS, Linux, BSD. 
 - [Zsh](https://www.zsh.org) should be installed (v4.3.9 or more recent is fine but we prefer 5.0.8 and newer). If not pre-installed (run `zsh --version` to confirm), check the following wiki instructions here: [Installing ZSH](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH)
 - `Xcode CLI tools` should be installed
 - `git` should be installed (recommended v2.4.11 or higher)
+
+# About this wizard
+When having a new Mac, it's always annoying to install all the tools and settings you want. This wizard will help you to install and configure your Mac with the tools you want.
+Certainly as developer you want to have a nice terminal with zsh, ohmyzsh, powerlevel10k and some other tools. This wizard will help you to install these tools and configure them.
+Besides the install Wizard, there is also an uninstall wizard available to remove all the installed tools and settings.
+
+## Demo install wizard
+![Demo install](./docs-resources/demo-install-wizard.gif)
+
+## Demo powerlevel wizard
+![Demo powerlevel](./docs-resources/demo-powerlevel10k-wizard.gif)
 
 ## Getting started
 Download the resources:
@@ -18,23 +29,16 @@ Run one of these scripts:
 ~/.oh-my-zsh/custom/installation/install.sh
 ```
 ```sh
-~/.oh-my-zsh/custom/installation/install-more.sh
-```
-```sh
-~/.oh-my-zsh/custom/installation/configure-powerlevel.sh
-```
-```sh
 ~/.oh-my-zsh/custom/installation/uninstall.sh
 ```
 
 You can add these as aliases later if you want to easy access these installers next time:
 ```sh
 alias zshInstall='~/.oh-my-zsh/custom/installation/install.sh'
-alias zshInstallMore='~/.oh-my-zsh/custom/installation/install-more.sh'
-alias zshInstallPowerlevel10k='~/.oh-my-zsh/custom/installation/configure-powerlevel.sh'
+alias zshUninstall='~/.oh-my-zsh/custom/installation/uninstall.sh'
 ```
 
-### Install.sh (Full or Partial install)
+### Install.sh
 #### Zsh
 _Just checks if zsh is installed. The installation of zsh is not developed yet_
 
@@ -66,14 +70,13 @@ _Warp > Settings > Features > Session > Honor user's custom prompt (PS1)_
 #### Zshrc
 _Overrides ~/.zshrc file. (Note: Before overriding, there will be a backup file created of the existing `~/.zshrc` to `~/.zshrc.old`)_
 
-### Install-more.sh
-Xtools 
-Homebrew
-Pyenv
-Mac Cursor speed
-Mac Show hidden files in Finder (under construction)
-GitHub Cli
-Command 'tree'
+#### Xtools 
+#### Homebrew
+#### Pyenv
+#### Mac Cursor speed
+#### Mac Finder hidden files
+#### GitHub Cli
+#### Command 'tree'
 
 ### configure-powerlevel.sh
 _Note: Currently not for Warp yet. (They are working on it)_
