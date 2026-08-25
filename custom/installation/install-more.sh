@@ -14,8 +14,7 @@ chmod 755 "$ZSH_INSTALL"/config/modules.sh && source "$ZSH_INSTALL"/config/modul
 #############
 # VARIABLES #
 #############
-IsFullInstall=true       # true: will install everything automatically, false" user chooses what to install
-InstallTextIsShown=false # to show only te text for the user once
+selected_option=0
 
 ########
 # INIT #
@@ -31,86 +30,66 @@ if $MOD_COMMANDS; then chmod 755 "$ZSH_INSTALL"/modules/commands.sh && source "$
 ###########
 # PROGRAM #
 ###########
+repo_version=$(get_repo_version)
+
 showInstallationMessage() {
-  new_line
   msg_title "What do you want to install/reinstall?"
-  if $MOD_XTOOLS; then
-    msg_inline "(1) Xtools "
-    check_install_xcode_tools
-  fi
-
-  if $MOD_HOMEBREW; then
-    msg_inline "(2) Homebrew "
-    check_install_brew
-  fi
-
-  if $MOD_PYENV; then
-    msg_inline "(3) Pyenv "
-    check_install_pyenv
-  fi
-
-  if $MOD_MAC; then
-    msg_inline "(4) Mac Cursor speed "
-    check_install_keyrepeat
-  fi
-  # todo: add this
-  #  if $MOD_MAC; then
-  #    msg_inline "(5) Mac Show hidden files in Finder"
-  #    check_install_keyrepeat
-  #  fi
-
-  if $MOD_GITHUB_CLI; then
-    msg_inline "(6) GitHub CLI "
-    check_install_github_cli
-  fi
-
-  msg_inline "(7) Command 'tree' "
-  check_install_tree_command
-
-  msg_dimmed "(q) Quit"
+  for i in "${!menu_labels[@]}"; do
+    if [ "$selected_option" -eq "$i" ]; then
+      marker=" ◉ "
+    else
+      marker="[◯]"
+    fi
+    msg_inline "  $marker ${menu_labels[$i]} "
+    "${menu_checks[$i]}"
+  done
+  msg_dimmed "Use ↑/↓ and Enter. Press q to quit."
 }
 
-while true; do
-  showInstallationMessage
-  read -p "Option: " choice
-  new_line
-  case $choice in
-  1)
-    install_xcode_tools
-    new_line
-    ;;
-  2)
-    check_install_brew
-    new_line
-    ;;
-  3)
-    install_pyenv
-    new_line
-    ;;
-  4)
-    install_keyrepeat
-    new_line
-    ;;
+menu_labels=()
+menu_checks=()
+menu_actions=()
 
-  5)
-    echo "todo"
-    new_line
-    ;;
-  6)
-    install_github_cli
-    new_line
-    ;;
+if $MOD_XTOOLS; then
+  menu_labels+=("Xtools")
+  menu_checks+=("check_install_xcode_tools")
+  menu_actions+=("install_xcode_tools")
+fi
 
-  7)
-    install_tree_command
-    new_line
-    ;;
-  q | Q)
-    exit
-    ;;
-  *)
-    new_line
-    msg_italic "Please choose a option (1-4/q)"
-    ;;
-  esac
-done
+if $MOD_HOMEBREW; then
+  menu_labels+=("Homebrew")
+  menu_checks+=("check_install_brew")
+  menu_actions+=("check_install_brew")
+fi
+
+if $MOD_PYENV; then
+  menu_labels+=("Pyenv")
+  menu_checks+=("check_install_pyenv")
+  menu_actions+=("install_pyenv")
+fi
+
+if $MOD_MAC; then
+  menu_labels+=("Mac Cursor speed")
+  menu_checks+=("check_install_keyrepeat")
+  menu_actions+=("install_keyrepeat")
+
+  menu_labels+=("Mac Finder hidden files")
+  menu_checks+=("check_install_finder_hidden")
+  menu_actions+=("install_finder_hidden")
+fi
+
+if $MOD_GITHUB_CLI; then
+  menu_labels+=("GitHub CLI")
+  menu_checks+=("check_install_github_cli")
+  menu_actions+=("install_github_cli")
+fi
+
+menu_labels+=("Command 'tree'")
+menu_checks+=("check_install_tree_command")
+menu_actions+=("install_tree_command")
+
+menu_title="Install More Wizard v$repo_version"
+menu_header="What do you want to install/reinstall?"
+menu_selected=$selected_option
+run_action_menu
+clear

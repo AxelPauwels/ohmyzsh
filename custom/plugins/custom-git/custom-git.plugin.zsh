@@ -22,7 +22,7 @@ alias glgDetail='glg -p'
 
 # workflow
 #alias gadd='git add' #param <file(s)>
-#alias gcm='git commit --message'
+#alias gco='git commit -m'
 #alias gch='git checkout' #param <branch-name>
 #alias gme='git merge' #param <branch-name>"
 #alias gre='git rebase'

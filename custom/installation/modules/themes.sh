@@ -6,13 +6,15 @@ _install_powerlevel10k() {
   msg_title "Themes > powerlevel10k"
   msg_searching "Searching for themes directory"
 
+  backup_path "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" p10k_theme
+
   # install ~/.oh-my-zsh/custom/themes/powerlevel10k
   if dir_exists "$HOME/.oh-my-zsh/custom/themes"; then
     msg_found "Found"
 
     msg_searching "Searching for powerlevel10k theme"
 
-    if ! dir_exists "./../themes/powerlevel10k"; then
+    if ! dir_exists "$HOME/.oh-my-zsh/custom/themes/powerlevel10k"; then
       msg_not_found "Not found"
 
       msg_searching "Installing powerlevel10k theme"
@@ -27,6 +29,7 @@ _install_powerlevel10k() {
   new_line
 
   msg_searching "Searching for powerlevel10k config file"
+  backup_path "$HOME/.p10k.zsh" p10k_config
   if file_exists "$HOME/.p10k.zsh"; then
     msg_found "Found"
 
@@ -54,13 +57,15 @@ _install_agnoster() {
   msg_title "Themes > agnoster"
   msg_searching "Searching for themes directory"
 
+  backup_path "$HOME/.oh-my-zsh/custom/themes/$agnoster_file_name" agnoster_theme
+
   # install ~/.oh-my-zsh/custom/themes/agnoster
   if dir_exists "$HOME/.oh-my-zsh/custom/themes"; then
     msg_found "Found"
 
     msg_searching "Searching for agnoster theme"
 
-    if ! file_exists "./../themes/$agnoster_file_name"; then
+    if ! file_exists "$HOME/.oh-my-zsh/custom/themes/$agnoster_file_name"; then
       msg_not_found "Not found"
 
       msg_searching "Installing agnoster theme"

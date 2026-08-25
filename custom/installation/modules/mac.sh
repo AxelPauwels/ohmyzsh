@@ -14,19 +14,25 @@ _logoutByUsername() {
 # @example: _macKeyrepeat 1 10
 _macKeyrepeat() {
   if [ $# -eq 2 ]; then
+    backup_defaults -g KeyRepeat keyrepeat_key
+    backup_defaults -g InitialKeyRepeat keyrepeat_delay
     defaults write -g KeyRepeat -int "${1}"
     defaults write -g InitialKeyRepeat -int "${2}"
 
     msg_warning "These settings only take effect after you logout and login. Do you want to logout now? (y/n)"
-    read userInput
-    local choice=$(toLower "$userInput")
-
-    if [[ $choice = "y" || $choice = "yes" ]]; then
-      msg_installed "Restarting..."
-      _logoutByUsername $USER
-    elif [[ $choice = "n" || $choice = "no" ]]; then
-      msg_installed "Ok, these settings will take effect next time you login."
-    fi
+    local choice
+    while true; do
+      read -rsn1 userInput
+      choice=$(toLower "$userInput")
+      if [[ $choice = "y" ]]; then
+        msg_installed "Restarting..."
+        _logoutByUsername $USER
+        break
+      elif [[ $choice = "n" ]]; then
+        msg_installed "Ok, these settings will take effect next time you login."
+        break
+      fi
+    done
   else
     msg_error "This function expects exactly 2 parameters. Too few or too many are given."
   fi
@@ -71,56 +77,33 @@ get_keyrepeat_name() {
   esac
 }
 
-#minimum values that can be set in GUI: 2 15
-_speeds_overview() {
-  msg "(1) Default Mac 60/68"
-  msg "(2) Medium 30/34"
-  msg "(3) Fast 1/5"
-  msg "(4) Developer 2/10 (recommended)"
-  msg "(5) Custom choice"
-}
-
-showManualInstallationMessage() {
-  msg_title "Which speed you want to set? (keyRepeat/DelayUntilRepeat)"
-  _speeds_overview
-  msg_dimmed "(q) Quit"
-}
+_apply_keyrepeat_default() { _macKeyrepeat 60 68; }
+_apply_keyrepeat_medium()  { _macKeyrepeat 30 34; }
+_apply_keyrepeat_fast()    { _macKeyrepeat 1 5; }
+_apply_keyrepeat_dev()     { _macKeyrepeat 2 10; }
 
 install_keyrepeat() {
-  while true; do
-    showManualInstallationMessage
-    read -p "Option: " choice
-    new_line
-    case $choice in
-    1)
-      _macKeyrepeat 60 68
-      new_line
-      ;;
-    2)
-      _macKeyrepeat 30 34
-      new_line
-      ;;
-    3)
-      _macKeyrepeat 1 5
-      new_line
-      ;;
-    4)
-      _macKeyrepeat 2 10
-      new_line
-      ;;
-    5)
-      _macKeyrepeat_custom
-      new_line
-      ;;
-    q | Q)
-      return
-      ;;
-    *)
-      new_line
-      msg_italic "Please choose a option (1-5/q)"
-      ;;
-    esac
-  done
+  local menu_title="Which speed you want to set? (keyRepeat/DelayUntilRepeat)"
+  local menu_header=""
+  local -a menu_labels=(
+    "Default Mac 60/68"
+    "Medium 30/34"
+    "Fast 1/5"
+    "Developer 2/10 (recommended)"
+    "Custom choice"
+  )
+  local -a menu_checks=()
+  local -a menu_actions=(
+    "_apply_keyrepeat_default"
+    "_apply_keyrepeat_medium"
+    "_apply_keyrepeat_fast"
+    "_apply_keyrepeat_dev"
+    "_macKeyrepeat_custom"
+  )
+  local menu_selected=0
+  run_action_menu
+  clear
+  menu_action_submenu=1
 }
 
 check_install_keyrepeat() {
@@ -136,6 +119,57 @@ check_install_keyrepeat() {
     keyrepeatName=$(get_keyrepeat_name "$keyRepeat" "$delayUntilRepeat")
 
     msg_found "Installed '$keyrepeatName' ($keyRepeat/$delayUntilRepeat)"
+  else
+    msg_not_found "Not installed"
+  fi
+}
+
+# --- Finder hidden files -----------------------------------------------------
+
+_finder_show_hidden() {
+  backup_defaults com.apple.finder AppleShowAllFiles finder_show_all_files
+  defaults write com.apple.finder AppleShowAllFiles true
+  killall Finder
+  msg_installed "Hidden files are now shown in Finder"
+}
+
+_finder_hide_hidden() {
+  backup_defaults com.apple.finder AppleShowAllFiles finder_show_all_files
+  defaults write com.apple.finder AppleShowAllFiles false
+  killall Finder
+  msg_installed "Hidden files are now hidden in Finder"
+}
+
+install_finder_hidden() {
+  local menu_title="Show or hide hidden files in finder:"
+  local menu_header=""
+  local -a menu_labels=(
+    "Show hidden files in finder"
+    "Hide hidden files in finder"
+  )
+  local -a menu_checks=()
+  local -a menu_actions=(
+    "_finder_show_hidden"
+    "_finder_hide_hidden"
+  )
+  local menu_selected=0
+  run_action_menu
+  clear
+  menu_action_submenu=1
+}
+
+check_install_finder_hidden() {
+  if defaults read com.apple.finder AppleShowAllFiles &>/dev/null; then
+    local value
+    value=$(defaults read com.apple.finder AppleShowAllFiles)
+    case "$(toLower "$value")" in
+    1 | true | yes)
+      msg_found "Installed 'Hidden files shown'"
+      ;;
+    *)
+      msg_found "Installed 'Hidden files hidden'"
+      ;;
+    esac
   else
     msg_not_found "Not installed"
   fi

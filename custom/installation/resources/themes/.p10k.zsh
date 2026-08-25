@@ -58,7 +58,7 @@
     nodenv                  # node.js version from nodenv (https://github.com/nodenv/nodenv)
     nvm                     # node.js version from nvm (https://github.com/nvm-sh/nvm)
     nodeenv                 # node.js environment (https://github.com/ekalinin/nodeenv)
-    # node_version          # node.js version
+    node_version          # node.js version
     # go_version            # go version (https://golang.org)
     # rust_version          # rustc version (https://www.rust-lang.org)
     # dotnet_version        # .NET version (https://dotnet.microsoft.com)
@@ -934,7 +934,7 @@
   typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_FOREGROUND=3
   typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_BACKGROUND=0
   # Default context color (no privileges, no SSH).
-  typeset -g POWERLEVEL9K_CONTEXT_FOREGROUND=3
+  typeset -g POWERLEVEL9K_CONTEXT_FOREGROUND='#FFCC00'
   typeset -g POWERLEVEL9K_CONTEXT_BACKGROUND=0
 
   # Context format when running with privileges: user@hostname.
@@ -1082,7 +1082,7 @@
   ##############################[ node_version: node.js version ]###############################
   # Node version color.
   typeset -g POWERLEVEL9K_NODE_VERSION_FOREGROUND=7
-  typeset -g POWERLEVEL9K_NODE_VERSION_BACKGROUND=2
+  typeset -g POWERLEVEL9K_NODE_VERSION_BACKGROUND=5
   # Show node version only when in a directory tree containing package.json.
   typeset -g POWERLEVEL9K_NODE_VERSION_PROJECT_ONLY=true
   # Custom icon.
@@ -1686,7 +1686,8 @@
   typeset -g POWERLEVEL9K_TIME_FOREGROUND=0
   typeset -g POWERLEVEL9K_TIME_BACKGROUND=7
   # Format for the current time: 09:51:02. See `man 3 strftime`.
-  typeset -g POWERLEVEL9K_TIME_FORMAT='%D{%H:%M:%S}'
+  #typeset -g POWERLEVEL9K_TIME_FORMAT='%D{%H:%M:%S}'
+  typeset -g POWERLEVEL9K_TIME_FORMAT='%D{%H:%M}'
   # If set to true, time will update when you hit enter. This way prompts for the past
   # commands will contain the start times of their commands as opposed to the default
   # behavior where they contain the end times of their preceding commands.
@@ -1749,7 +1750,7 @@
   #   - verbose: Enable instant prompt and print a warning when detecting console output during
   #              zsh initialization. Choose this if you've never tried instant prompt, haven't
   #              seen the warning, or if you are unsure what this all means.
-  typeset -g POWERLEVEL9K_INSTANT_PROMPT=verbose
+  typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 
   # Hot reload allows you to change POWERLEVEL9K options after Powerlevel10k has been initialized.
   # For example, you can type POWERLEVEL9K_BACKGROUND=red and see your prompt turn red. Hot reload
@@ -1776,7 +1777,7 @@ typeset -g POWERLEVEL9K_CONFIG_FILE=${${(%):-%x}:a}
 POWERLEVEL9K_PYENV_PROMPT_ALWAYS_SHOW=false
 POWERLEVEL9K_PYENV_SHOW_PYTHON_VERSION=true
 # note I commented 'typeset -g POWERLEVEL9K_CONTEXT_{DEFAULT,SUDO}_{CONTENT,VISUAL_IDENTIFIER}_EXPANSION=' at ~/.zshrc to show username
-POWERLEVEL9K_CONTEXT_TEMPLATE='Axel🤓Ravago'
+POWERLEVEL9K_CONTEXT_TEMPLATE='Axel 🧑‍💻'
 #POWERLEVEL9K_CONTEXT_VISUAL_IDENTIFIER_EXPANSION='🤓'
 
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
@@ -1793,7 +1794,7 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   nodenv                  # node.js version from nodenv (https://github.com/nodenv/nodenv)
   nvm                     # node.js version from nvm (https://github.com/nvm-sh/nvm)
   nodeenv                 # node.js environment (https://github.com/ekalinin/nodeenv)
-  # node_version          # node.js version
+  node_version            # node.js version
   # go_version            # go version (https://golang.org)
   # rust_version          # rustc version (https://www.rust-lang.org)
   # dotnet_version        # .NET version (https://dotnet.microsoft.com)
@@ -1854,7 +1855,7 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
 # Type `p10k help segment` for documentation and a more sophisticated example.
 # Note, cannot start with reserved name 'custom', so not prompt_custom_message
 function prompt_segment_right_custom() {
-  p10k segment -b '#002033' -f red -i '❤️' -t '❤️  I love my wife and daughter'
+  # p10k segment -b '#002033' -f red -i '❤️' -t '❤️  I love my wife'
 }
 
 #################
