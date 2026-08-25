@@ -7,6 +7,8 @@ override_zshrc_file() {
   msg_title "Create/Override zshrc"
   msg_searching "Searching zshrc file"
 
+  backup_path "$zshrc_path" zshrc
+
   if file_exists "$zshrc_path"; then
     msg_found "Found"
 

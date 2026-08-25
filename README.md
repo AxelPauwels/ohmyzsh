@@ -23,6 +23,9 @@ Run one of these scripts:
 ```sh
 ~/.oh-my-zsh/custom/installation/configure-powerlevel.sh
 ```
+```sh
+~/.oh-my-zsh/custom/installation/uninstall.sh
+```
 
 You can add these as aliases later if you want to easy access these installers next time:
 ```sh

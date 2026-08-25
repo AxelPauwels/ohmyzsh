@@ -195,6 +195,11 @@ _set_font() {
 }
 
 install_color_preset_and_font() {
+  # Snapshot the pristine iTerm2 state before we touch anything, so it can be
+  # fully restored on uninstall (the steps below rewrite the whole plist).
+  backup_path "$iterm2_plist" iterm2_plist
+  backup_path "$ZSH_CUSTOM/schemes" iterm_schemes
+
   _import_scheme
   _set_color_preset
   _set_font

@@ -14,6 +14,8 @@ _logoutByUsername() {
 # @example: _macKeyrepeat 1 10
 _macKeyrepeat() {
   if [ $# -eq 2 ]; then
+    backup_defaults -g KeyRepeat keyrepeat_key
+    backup_defaults -g InitialKeyRepeat keyrepeat_delay
     defaults write -g KeyRepeat -int "${1}"
     defaults write -g InitialKeyRepeat -int "${2}"
 

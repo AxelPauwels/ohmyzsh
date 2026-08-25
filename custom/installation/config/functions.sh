@@ -161,24 +161,25 @@ run_action_menu() {
 
   while true; do
     _menu_home
-    msg_title "$menu_title"
-    new_line
+    local eol=$'\033[K'
+    msg_title "$menu_title$eol"
+    msg "$eol"
     if [ -n "${menu_header:-}" ]; then
-      msg "$menu_header"
-      new_line
+      msg "$menu_header$eol"
+      msg "$eol"
     fi
     for ((i = 0; i < count; i++)); do
       if [ "$selected" -eq "$i" ]; then marker="(◉)"; else marker="(◯)"; fi
       status_line="${_menu_status[$i]}"
       if [ -n "$status_line" ]; then
-        msg " $marker ${menu_labels[$i]} $status_line"
+        msg " $marker ${menu_labels[$i]} $status_line$eol"
       else
-        msg " $marker ${menu_labels[$i]}"
+        msg " $marker ${menu_labels[$i]}$eol"
       fi
     done
-    msg ""
-    msg_dimmed "$hint"
-    msg_dimmed "────────────────────────────────────────────"
+    msg "$eol"
+    msg_dimmed "$hint$eol"
+    msg_dimmed "────────────────────────────────────────────$eol"
 
     # Cursor is now parked at the top of the output area (line after the hint).
     key=$(read_menu_key)
@@ -216,4 +217,112 @@ run_action_menu() {
 
   _menu_show_cursor
   menu_selected=$selected
+}
+
+# ============================================================================
+# Pristine backup / restore helpers
+# ----------------------------------------------------------------------------
+# Installers snapshot a file/dir/defaults value ONCE (before their very first
+# modification) so uninstall.sh can put things back exactly as they were.
+# A snapshot is only taken if none exists yet, so the true pristine state is
+# never overwritten by re-running an installer.
+# ============================================================================
+
+WIZARD_BACKUP_DIR="${WIZARD_BACKUP_DIR:-$HOME/.oh-my-zsh/custom/.wizard-backups}"
+
+# has_backup <key>  -> returns 0 if a pristine snapshot exists
+has_backup() {
+  [ -e "$WIZARD_BACKUP_DIR/$1.state" ] || [ -e "$WIZARD_BACKUP_DIR/$1.defaults" ]
+}
+
+# backup_path <source_abs_path> <key>
+backup_path() {
+  local src="$1" key="$2"
+  mkdir -p "$WIZARD_BACKUP_DIR"
+  local marker="$WIZARD_BACKUP_DIR/$key.state"
+  [ -e "$marker" ] && return 0 # already snapshotted; keep the pristine one
+
+  if [ -d "$src" ]; then
+    rm -rf "${WIZARD_BACKUP_DIR:?}/$key.dir"
+    cp -R "$src" "$WIZARD_BACKUP_DIR/$key.dir"
+    echo "dir" >"$marker"
+  elif [ -e "$src" ]; then
+    cp "$src" "$WIZARD_BACKUP_DIR/$key.file"
+    echo "file" >"$marker"
+  else
+    echo "absent" >"$marker" # nothing existed before install
+  fi
+}
+
+# restore_path <dest_abs_path> <key>
+# Restores the pristine snapshot then clears it. If nothing was snapshotted,
+# the destination is removed (best-effort clean-up).
+restore_path() {
+  local dest="$1" key="$2"
+  local marker="$WIZARD_BACKUP_DIR/$key.state"
+
+  if [ ! -e "$marker" ]; then
+    rm -rf "$dest"
+    return 0
+  fi
+
+  local state
+  state="$(cat "$marker")"
+  rm -rf "$dest"
+  case "$state" in
+  dir) cp -R "$WIZARD_BACKUP_DIR/$key.dir" "$dest" ;;
+  file) cp "$WIZARD_BACKUP_DIR/$key.file" "$dest" ;;
+  absent) : ;; # nothing existed before, leave it removed
+  esac
+
+  rm -rf "${WIZARD_BACKUP_DIR:?}/$key.state" "${WIZARD_BACKUP_DIR:?}/$key.file" "${WIZARD_BACKUP_DIR:?}/$key.dir"
+}
+
+# backup_defaults <domain> <key_name> <backup_key>
+backup_defaults() {
+  local domain="$1" dkey="$2" key="$3"
+  mkdir -p "$WIZARD_BACKUP_DIR"
+  local marker="$WIZARD_BACKUP_DIR/$key.defaults"
+  [ -e "$marker" ] && return 0
+
+  if defaults read "$domain" "$dkey" >/dev/null 2>&1; then
+    local val type
+    val="$(defaults read "$domain" "$dkey" 2>/dev/null)"
+    type="$(defaults read-type "$domain" "$dkey" 2>/dev/null | sed 's/^Type is //')"
+    {
+      echo "present"
+      echo "$type"
+      echo "$val"
+    } >"$marker"
+  else
+    echo "absent" >"$marker"
+  fi
+}
+
+# restore_defaults <domain> <key_name> <backup_key>
+restore_defaults() {
+  local domain="$1" dkey="$2" key="$3"
+  local marker="$WIZARD_BACKUP_DIR/$key.defaults"
+
+  if [ ! -e "$marker" ]; then
+    defaults delete "$domain" "$dkey" 2>/dev/null
+    return 0
+  fi
+
+  local state type val
+  state="$(sed -n '1p' "$marker")"
+  if [ "$state" = "present" ]; then
+    type="$(sed -n '2p' "$marker")"
+    val="$(sed -n '3,$p' "$marker")"
+    case "$type" in
+    integer) defaults write "$domain" "$dkey" -int "$val" ;;
+    boolean) defaults write "$domain" "$dkey" -bool "$val" ;;
+    float) defaults write "$domain" "$dkey" -float "$val" ;;
+    *) defaults write "$domain" "$dkey" -string "$val" ;;
+    esac
+  else
+    defaults delete "$domain" "$dkey" 2>/dev/null
+  fi
+
+  rm -f "$marker"
 }

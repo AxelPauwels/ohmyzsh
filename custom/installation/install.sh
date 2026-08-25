@@ -131,6 +131,8 @@ whatNextMenu() {
 
 _choose_full_install()    { IsFullInstall=true;  menu_exit=1; }
 _choose_partial_install() { IsFullInstall=false; menu_exit=1; }
+_run_install_more() { bash "$ZSH_INSTALL"/install-more.sh; printf '\033[?25h' >&2; clear; exit; }
+_run_configure()    { bash "$ZSH_INSTALL"/configure-powerlevel.sh; printf '\033[?25h' >&2; clear; exit; }
 
 ###########
 # PROGRAM #
@@ -188,9 +190,9 @@ fi
 menu_title="Install Wizard v$repo_version"
 menu_header="$( { msg_title 'Current Installation'; installationOverview; } 2>&1 )
 "$'\n'"How do you want to install?"
-menu_labels=("Full installation" "Partial installation")
+menu_labels=("Full installation" "Partial installation" "Install more stuff" "Configure your own prompt")
 menu_checks=()
-menu_actions=("_choose_full_install" "_choose_partial_install")
+menu_actions=("_choose_full_install" "_choose_partial_install" "_run_install_more" "_run_configure")
 menu_selected=$selected_install_mode
 run_action_menu
 if [ "${menu_quit:-0}" -eq 1 ]; then
