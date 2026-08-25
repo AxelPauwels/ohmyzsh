@@ -149,15 +149,43 @@ _menu_clear_below()  { printf '\033[J' >&2; }
 _menu_hide_cursor()  { printf '\033[?25l' >&2; }
 _menu_show_cursor()  { printf '\033[?25h' >&2; }
 
+# --- Lightweight loading spinner -------------------------------------------
+# Shows an animated spinner on stderr while a slow step runs (e.g. probing
+# installed versions before the menu is drawn).
+_spinner_pid=""
+
+start_spinner() {
+  local message="${1:-Loading...}"
+  _menu_hide_cursor
+  (
+    local frames=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+    local i=0
+    while true; do
+      printf '\r%s %s' "${frames[i++ % ${#frames[@]}]}" "$message" >&2
+      sleep 0.1
+    done
+  ) &
+  _spinner_pid=$!
+}
+
+stop_spinner() {
+  if [ -n "$_spinner_pid" ]; then
+    kill "$_spinner_pid" >/dev/null 2>&1
+    wait "$_spinner_pid" 2>/dev/null
+    _spinner_pid=""
+  fi
+  printf '\r\033[K' >&2
+}
+
 # Signal-safe terminal restore. The menu engine hides the cursor; without this
 # guard a Ctrl-C (SIGINT) or kill while the menu is drawn would leave the user's
 # terminal with a permanently invisible cursor. Each top-level wizard calls this
 # once, right after sourcing functions.sh, so the cursor is always restored on
 # exit or interrupt no matter where the script dies.
 install_cursor_guard() {
-  trap '_menu_show_cursor' EXIT
-  trap '_menu_show_cursor; exit 130' INT
-  trap '_menu_show_cursor; exit 143' TERM
+  trap 'stop_spinner; _menu_show_cursor' EXIT
+  trap 'stop_spinner; _menu_show_cursor; exit 130' INT
+  trap 'stop_spinner; _menu_show_cursor; exit 143' TERM
 }
 
 run_action_menu() {
@@ -167,6 +195,7 @@ run_action_menu() {
   local key i marker status_line
   local -a _menu_status
 
+  start_spinner "Initializing wizard, checking installed versions…"
   for ((i = 0; i < count; i++)); do
     if [ -n "${menu_checks[$i]:-}" ]; then
       _menu_status[$i]="$(${menu_checks[$i]} 2>&1)"
@@ -174,6 +203,7 @@ run_action_menu() {
       _menu_status[$i]=""
     fi
   done
+  stop_spinner
 
   menu_quit=0
   menu_exit=0
@@ -199,6 +229,10 @@ run_action_menu() {
       fi
     done
     msg "$eol"
+    if [ -n "${menu_footer:-}" ]; then
+      msg "$menu_footer$eol"
+      msg "$eol"
+    fi
     msg_dimmed "$hint$eol"
     msg_dimmed "────────────────────────────────────────────$eol"
 
