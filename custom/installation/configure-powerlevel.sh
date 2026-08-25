@@ -33,8 +33,8 @@ _configure_p10k_nickname() {
   temp_p10k_config=$(mktemp)
   if awk -v nickname="$p10k_nickname" '
     /^[[:space:]]*#/ { print; next }
-    /^[[:space:]]*POWERLEVEL9K_CONTEXT_TEMPLATE=/ {
-      print "POWERLEVEL9K_CONTEXT_TEMPLATE='\''" nickname "'\''"
+    match($0, /^[[:space:]]*(typeset[[:space:]]+-g[[:space:]]+)?POWERLEVEL9K_CONTEXT_TEMPLATE=/) {
+      print substr($0, 1, RLENGTH) "'\''" nickname "'\''"
       replaced=1
       next
     }
