@@ -107,42 +107,36 @@ installationOverview() {
 restartYourTerminalMessage() {
   msg_italic ""
   msg_italic "Restart your terminal to load all changes (certainly if your font has changed)"
-  msg_italic "Install more stuff: ~/.oh-my-zsh/custom/installation/install-more.sh"
-  msg_italic "Configure your own prompt: ~/.oh-my-zsh/custom/installation/configure-powerlevel.sh"
 }
 
-showInstallationMessage() {
-  msg_title "Current Installation"
-  installationOverview
-  new_line
-  msg_title "How do you want to install?"
-  print_radio_option "$selected_install_mode" 0 "Full installation"
-  print_radio_option "$selected_install_mode" 1 "Partial installation"
-  msg_dimmed "Use ↑/↓ and Enter. Press q to quit."
+_open_install_more() { bash "$ZSH_INSTALL"/install-more.sh; menu_exit=1; }
+_open_configure()    { bash "$ZSH_INSTALL"/configure-powerlevel.sh; menu_exit=1; }
+
+whatNextMenu() {
+  local menu_title="What's next?"
+  local menu_header="Restart your terminal to load all changes (certainly if your font has changed)."
+  local -a menu_labels=(
+    "Install more stuff"
+    "Configure your own prompt"
+  )
+  local -a menu_checks=()
+  local -a menu_actions=(
+    "_open_install_more"
+    "_open_configure"
+  )
+  local menu_selected=0
+  run_action_menu
+  clear
 }
 
-showManualInstallationMessage() {
-  msg_title "What do you want to install/reinstall?"
-  for i in "${!manual_labels[@]}"; do
-    if [ "$selected_manual_option" -eq "$i" ]; then
-      marker="(◉)"
-    else
-      marker="(◯)"
-    fi
-    msg_inline "  $marker ${manual_labels[$i]} "
-    "${manual_checks[$i]}"
-  done
-  msg_dimmed "Use ↑/↓ and Enter. Press q to quit."
-}
+_choose_full_install()    { IsFullInstall=true;  menu_exit=1; }
+_choose_partial_install() { IsFullInstall=false; menu_exit=1; }
 
 ###########
 # PROGRAM #
 ###########
 init
-new_line
 repo_version=$(get_repo_version)
-msg_title "Install Wizard v$repo_version"
-new_line
 
 manual_labels=()
 manual_checks=()
@@ -191,36 +185,19 @@ if $MOD_ZSHRC; then
 fi
 
 # user chooses full or manual installation
-while true; do
+menu_title="Install Wizard v$repo_version"
+menu_header="$( { msg_title 'Current Installation'; installationOverview; } 2>&1 )
+"$'\n'"How do you want to install?"
+menu_labels=("Full installation" "Partial installation")
+menu_checks=()
+menu_actions=("_choose_full_install" "_choose_partial_install")
+menu_selected=$selected_install_mode
+run_action_menu
+if [ "${menu_quit:-0}" -eq 1 ]; then
   clear
-  msg_title "Install Wizard v$repo_version"
-  new_line
-  showInstallationMessage
-  key=$(read_menu_key)
-  case "$key" in
-  $'\x1b[A')
-    selected_install_mode=$((selected_install_mode - 1))
-    if [ "$selected_install_mode" -lt 0 ]; then
-      selected_install_mode=1
-    fi
-    ;;
-  $'\x1b[B')
-    selected_install_mode=$((selected_install_mode + 1))
-    if [ "$selected_install_mode" -gt 1 ]; then
-      selected_install_mode=0
-    fi
-    ;;
-  "" | $'\n' | $'\r')
-    if [ "$selected_install_mode" -eq 1 ]; then
-      IsFullInstall=false
-    fi
-    break
-    ;;
-  q | Q)
-    exit
-    ;;
-  esac
-done
+  exit
+fi
+clear
 
 # FULL installation
 if $IsFullInstall; then
@@ -240,37 +217,18 @@ if $IsFullInstall; then
 
   new_line
   restartYourTerminalMessage
+  whatNextMenu
 fi
 
 # MANUAL installation
 if ! $IsFullInstall; then
-  while true; do
-    clear
-    msg_title "Install Wizard v$repo_version"
-    new_line
-    showManualInstallationMessage
-    key=$(read_menu_key)
-    case "$key" in
-    $'\x1b[A')
-      selected_manual_option=$((selected_manual_option - 1))
-      if [ "$selected_manual_option" -lt 0 ]; then
-        selected_manual_option=$((${#manual_labels[@]} - 1))
-      fi
-      ;;
-    $'\x1b[B')
-      selected_manual_option=$((selected_manual_option + 1))
-      if [ "$selected_manual_option" -ge "${#manual_labels[@]}" ]; then
-        selected_manual_option=0
-      fi
-      ;;
-    "" | $'\n' | $'\r')
-      "${manual_actions[$selected_manual_option]}"
-      new_line
-      ;;
-    q | Q)
-      restartYourTerminalMessage
-      exit
-      ;;
-    esac
-  done
+  menu_title="Install Wizard v$repo_version"
+  menu_header="What do you want to install/reinstall?"
+  menu_labels=("${manual_labels[@]}")
+  menu_checks=("${manual_checks[@]}")
+  menu_actions=("${manual_actions[@]}")
+  menu_selected=$selected_manual_option
+  run_action_menu
+  whatNextMenu
+  exit
 fi

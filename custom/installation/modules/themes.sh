@@ -12,7 +12,7 @@ _install_powerlevel10k() {
 
     msg_searching "Searching for powerlevel10k theme"
 
-    if ! dir_exists "./../themes/powerlevel10k"; then
+    if ! dir_exists "$HOME/.oh-my-zsh/custom/themes/powerlevel10k"; then
       msg_not_found "Not found"
 
       msg_searching "Installing powerlevel10k theme"
@@ -60,7 +60,7 @@ _install_agnoster() {
 
     msg_searching "Searching for agnoster theme"
 
-    if ! file_exists "./../themes/$agnoster_file_name"; then
+    if ! file_exists "$HOME/.oh-my-zsh/custom/themes/$agnoster_file_name"; then
       msg_not_found "Not found"
 
       msg_searching "Installing agnoster theme"

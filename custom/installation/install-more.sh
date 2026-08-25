@@ -31,16 +31,14 @@ if $MOD_COMMANDS; then chmod 755 "$ZSH_INSTALL"/modules/commands.sh && source "$
 # PROGRAM #
 ###########
 repo_version=$(get_repo_version)
-msg_title "Install More Wizard v$repo_version"
-new_line
 
 showInstallationMessage() {
   msg_title "What do you want to install/reinstall?"
   for i in "${!menu_labels[@]}"; do
     if [ "$selected_option" -eq "$i" ]; then
-      marker="(◉)"
+      marker=" ◉ "
     else
-      marker="(◯)"
+      marker="[◯]"
     fi
     msg_inline "  $marker ${menu_labels[$i]} "
     "${menu_checks[$i]}"
@@ -86,31 +84,8 @@ menu_labels+=("Command 'tree'")
 menu_checks+=("check_install_tree_command")
 menu_actions+=("install_tree_command")
 
-while true; do
-  clear
-  msg_title "Install More Wizard v$repo_version"
-  new_line
-  showInstallationMessage
-  key=$(read_menu_key)
-  case "$key" in
-  $'\x1b[A')
-    selected_option=$((selected_option - 1))
-    if [ "$selected_option" -lt 0 ]; then
-      selected_option=$((${#menu_labels[@]} - 1))
-    fi
-    ;;
-  $'\x1b[B')
-    selected_option=$((selected_option + 1))
-    if [ "$selected_option" -ge "${#menu_labels[@]}" ]; then
-      selected_option=0
-    fi
-    ;;
-  "" | $'\n' | $'\r')
-    "${menu_actions[$selected_option]}"
-    new_line
-    ;;
-  q | Q)
-    exit
-    ;;
-  esac
-done
+menu_title="Install More Wizard v$repo_version"
+menu_header="What do you want to install/reinstall?"
+menu_selected=$selected_option
+run_action_menu
+clear

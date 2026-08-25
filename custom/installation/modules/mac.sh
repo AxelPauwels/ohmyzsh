@@ -71,56 +71,32 @@ get_keyrepeat_name() {
   esac
 }
 
-#minimum values that can be set in GUI: 2 15
-_speeds_overview() {
-  msg "(1) Default Mac 60/68"
-  msg "(2) Medium 30/34"
-  msg "(3) Fast 1/5"
-  msg "(4) Developer 2/10 (recommended)"
-  msg "(5) Custom choice"
-}
-
-showManualInstallationMessage() {
-  msg_title "Which speed you want to set? (keyRepeat/DelayUntilRepeat)"
-  _speeds_overview
-  msg_dimmed "(q) Quit"
-}
+_apply_keyrepeat_default() { _macKeyrepeat 60 68; }
+_apply_keyrepeat_medium()  { _macKeyrepeat 30 34; }
+_apply_keyrepeat_fast()    { _macKeyrepeat 1 5; }
+_apply_keyrepeat_dev()     { _macKeyrepeat 2 10; }
 
 install_keyrepeat() {
-  while true; do
-    showManualInstallationMessage
-    read -p "Option: " choice
-    new_line
-    case $choice in
-    1)
-      _macKeyrepeat 60 68
-      new_line
-      ;;
-    2)
-      _macKeyrepeat 30 34
-      new_line
-      ;;
-    3)
-      _macKeyrepeat 1 5
-      new_line
-      ;;
-    4)
-      _macKeyrepeat 2 10
-      new_line
-      ;;
-    5)
-      _macKeyrepeat_custom
-      new_line
-      ;;
-    q | Q)
-      return
-      ;;
-    *)
-      new_line
-      msg_italic "Please choose a option (1-5/q)"
-      ;;
-    esac
-  done
+  local menu_title="Which speed you want to set? (keyRepeat/DelayUntilRepeat)"
+  local menu_header=""
+  local -a menu_labels=(
+    "Default Mac 60/68"
+    "Medium 30/34"
+    "Fast 1/5"
+    "Developer 2/10 (recommended)"
+    "Custom choice"
+  )
+  local -a menu_checks=()
+  local -a menu_actions=(
+    "_apply_keyrepeat_default"
+    "_apply_keyrepeat_medium"
+    "_apply_keyrepeat_fast"
+    "_apply_keyrepeat_dev"
+    "_macKeyrepeat_custom"
+  )
+  local menu_selected=0
+  run_action_menu
+  clear
 }
 
 check_install_keyrepeat() {
