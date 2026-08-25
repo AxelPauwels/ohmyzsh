@@ -85,3 +85,27 @@ get_repo_version() {
     echo "unknown"
   fi
 }
+
+read_menu_key() {
+  local key
+  local next_chars
+  IFS= read -rsn1 key
+
+  if [[ $key == $'\x1b' ]]; then
+    IFS= read -rsn2 -t 1 next_chars || true
+    key+="$next_chars"
+  fi
+
+  printf '%s' "$key"
+}
+
+print_radio_option() {
+  local selected_index="$1"
+  local option_index="$2"
+  local option_label="$3"
+  if [ "$selected_index" -eq "$option_index" ]; then
+    msg "  (◉) $option_label"
+  else
+    msg "  (◯) $option_label"
+  fi
+}

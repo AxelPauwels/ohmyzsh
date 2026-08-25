@@ -15,8 +15,8 @@ chmod 755 "$ZSH_INSTALL"/config/modules.sh && source "$ZSH_INSTALL"/config/modul
 # VARIABLES #
 #############
 IsFullInstall=true                    # true: will install everything automatically, false" user chooses what to install
-InstallTextIsShown=false              # to show only te text for the user once
-installationOverviewWithOptions=false # true: show numbers to choose as option
+selected_install_mode=0
+selected_manual_option=0
 
 #############
 # FUNCTIONS #
@@ -41,63 +41,63 @@ init() {
 
 installationOverview() {
   if $MOD_ZSH; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(1) Zsh " || echo "Zsh ")
+    message="Zsh "
     msg_inline "$message"
 
     check_install_zsh
   fi
 
   if $MOD_FONTS; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(2) Fonts " || echo "Fonts ")
+    message="Fonts "
     msg_inline "$message"
 
     check_install_fonts
   fi
 
   if $MOD_ITERM; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(3) iTerm " || echo "iTerm ")
+    message="iTerm "
     msg_inline "$message"
 
     check_install_iterm
   fi
 
   if $MOD_ITERM; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(4) iTerm color & font settings " || echo "iTerm color & font settings ")
+    message="iTerm color & font settings "
     msg_inline "$message"
 
     check_install_color_preset_and_font
   fi
 
   if $MOD_THEMES; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(5) Theme Powerlevel10k " || echo "Theme Powerlevel10k ")
+    message="Theme Powerlevel10k "
     msg_inline "$message"
 
     check_install_theme_pk10
   fi
 
   if $MOD_THEMES; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(6) Theme Agnoster " || echo "Theme Agnoster ")
+    message="Theme Agnoster "
     msg_inline "$message"
 
     check_install_theme_agnoster
   fi
 
   if $MOD_WARP; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(7) Warp " || echo "Warp ")
+    message="Warp "
     msg_inline "$message"
 
     check_install_warp
   fi
 
   if $MOD_ITERM; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(8) Warp theme " || echo "Warp theme ")
+    message="Warp theme "
     msg_inline "$message"
 
     check_install_warp_theme
   fi
 
   if $MOD_ZSHRC; then
-    message=$([ $installationOverviewWithOptions == true ] && echo "(9) Zshrc " || echo "Zshrc ")
+    message="Zshrc "
     msg_inline "$message"
 
     check_override_zshrc_file
@@ -114,20 +114,24 @@ showInstallationMessage() {
   msg_title "Current Installation"
   installationOverview
   new_line
-
-  if ! $InstallTextIsShown; then
-    msg_title "How do you want to install?"
-    msg "(1) Full installation"
-    msg "(2) Partial installation"
-    msg_dimmed "(q) Quit"
-    InstallTextIsShown=true
-  fi
+  msg_title "How do you want to install?"
+  print_radio_option "$selected_install_mode" 0 "Full installation"
+  print_radio_option "$selected_install_mode" 1 "Partial installation"
+  msg_dimmed "Use ↑/↓ and Enter. Press q to quit."
 }
 
 showManualInstallationMessage() {
   msg_title "What do you want to install/reinstall?"
-  installationOverview
-  msg_dimmed "(q) Quit"
+  for i in "${!manual_labels[@]}"; do
+    if [ "$selected_manual_option" -eq "$i" ]; then
+      marker="(◉)"
+    else
+      marker="(◯)"
+    fi
+    msg_inline "  $marker ${manual_labels[$i]} "
+    "${manual_checks[$i]}"
+  done
+  msg_dimmed "Use ↑/↓ and Enter. Press q to quit."
 }
 
 ###########
@@ -139,26 +143,80 @@ repo_version=$(get_repo_version)
 msg_title "Install Wizard v$repo_version"
 new_line
 
+manual_labels=()
+manual_checks=()
+manual_actions=()
+
+if $MOD_ZSH; then
+  manual_labels+=("Zsh")
+  manual_checks+=("check_install_zsh")
+  manual_actions+=("install_zsh_manually")
+fi
+if $MOD_FONTS; then
+  manual_labels+=("Fonts")
+  manual_checks+=("check_install_fonts")
+  manual_actions+=("install_fonts_manually")
+fi
+if $MOD_ITERM; then
+  manual_labels+=("iTerm")
+  manual_checks+=("check_install_iterm")
+  manual_actions+=("install_iterm_manually")
+  manual_labels+=("iTerm color & font settings")
+  manual_checks+=("check_install_color_preset_and_font")
+  manual_actions+=("install_color_preset_and_font_manually")
+fi
+if $MOD_THEMES; then
+  manual_labels+=("Theme Powerlevel10k")
+  manual_checks+=("check_install_theme_pk10")
+  manual_actions+=("install_theme_pk10_manually")
+  manual_labels+=("Theme Agnoster")
+  manual_checks+=("check_install_theme_agnoster")
+  manual_actions+=("install_theme_agnoster_manually")
+fi
+if $MOD_WARP; then
+  manual_labels+=("Warp")
+  manual_checks+=("check_install_warp")
+  manual_actions+=("install_warp_manually")
+fi
+if $MOD_ITERM; then
+  manual_labels+=("Warp theme")
+  manual_checks+=("check_install_warp_theme")
+  manual_actions+=("install_warp_theme_manually")
+fi
+if $MOD_ZSHRC; then
+  manual_labels+=("Zshrc")
+  manual_checks+=("check_override_zshrc_file")
+  manual_actions+=("override_zshrc_file_manually")
+fi
+
 # user chooses full or manual installation
 while true; do
-  showInstallationMessage
-  read -p "Option: " choice
+  clear
+  msg_title "Install Wizard v$repo_version"
   new_line
-  case $choice in
-  1)
-    break
+  showInstallationMessage
+  key=$(read_menu_key)
+  case "$key" in
+  $'\x1b[A')
+    selected_install_mode=$((selected_install_mode - 1))
+    if [ "$selected_install_mode" -lt 0 ]; then
+      selected_install_mode=1
+    fi
     ;;
-  2)
-    IsFullInstall=false
-    installationOverviewWithOptions=true
+  $'\x1b[B')
+    selected_install_mode=$((selected_install_mode + 1))
+    if [ "$selected_install_mode" -gt 1 ]; then
+      selected_install_mode=0
+    fi
+    ;;
+  "" | $'\n' | $'\r')
+    if [ "$selected_install_mode" -eq 1 ]; then
+      IsFullInstall=false
+    fi
     break
     ;;
   q | Q)
     exit
-    ;;
-  *)
-    new_line
-    msg_italic "Please choose a option (1/2/q)"
     ;;
   esac
 done
@@ -186,53 +244,31 @@ fi
 # MANUAL installation
 if ! $IsFullInstall; then
   while true; do
-    showManualInstallationMessage
-    read -p "Option: " choice
+    clear
+    msg_title "Install Wizard v$repo_version"
     new_line
-    case $choice in
-    1)
-      install_zsh_manually
-      new_line
+    showManualInstallationMessage
+    key=$(read_menu_key)
+    case "$key" in
+    $'\x1b[A')
+      selected_manual_option=$((selected_manual_option - 1))
+      if [ "$selected_manual_option" -lt 0 ]; then
+        selected_manual_option=$((${#manual_labels[@]} - 1))
+      fi
       ;;
-    2)
-      install_fonts_manually
-      new_line
+    $'\x1b[B')
+      selected_manual_option=$((selected_manual_option + 1))
+      if [ "$selected_manual_option" -ge "${#manual_labels[@]}" ]; then
+        selected_manual_option=0
+      fi
       ;;
-    3)
-      install_iterm_manually
-      new_line
-      ;;
-    4)
-      install_color_preset_and_font_manually
-      new_line
-      ;;
-    5)
-      install_theme_pk10_manually
-      new_line
-      ;;
-    6)
-      install_theme_agnoster_manually
-      new_line
-      ;;
-    7)
-      install_warp_manually
-      new_line
-      ;;
-    8)
-      install_warp_theme_manually
-      new_line
-      ;;
-    9)
-      override_zshrc_file_manually
+    "" | $'\n' | $'\r')
+      "${manual_actions[$selected_manual_option]}"
       new_line
       ;;
     q | Q)
       restartYourTerminalMessage
       exit
-      ;;
-    *)
-      new_line
-      msg_italic "Please choose a option (1-9/q)"
       ;;
     esac
   done
