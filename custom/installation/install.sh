@@ -135,6 +135,9 @@ showManualInstallationMessage() {
 ###########
 init
 new_line
+repo_version=$(get_repo_version)
+msg_title "Install Wizard v$repo_version"
+new_line
 
 # user chooses full or manual installation
 while true; do

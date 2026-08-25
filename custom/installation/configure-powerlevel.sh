@@ -22,7 +22,7 @@ showConfigureMessage() {
   if ! $ConfigureMessageIsShown; then
     msg_title "How do you want to configure?"
     msg "(1) Use the Powerlevel10k configuration wizard (recommended)"
-    msg "(2) Reset to saved configuration in git"
+    msg "(2) Use Axel's Powerlevel10k configuration"
     msg "(3) Change Powerlevel10k username/nickname"
     msg_dimmed "(q) Quit"
     ConfigureMessageIsShown=true
@@ -32,6 +32,9 @@ showConfigureMessage() {
 ###########
 # PROGRAM #
 ###########
+new_line
+repo_version=$(get_repo_version)
+msg_title "Configure Powerlevel Wizard v$repo_version"
 new_line
 
 # user chooses

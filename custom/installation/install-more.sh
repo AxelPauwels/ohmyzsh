@@ -31,6 +31,10 @@ if $MOD_COMMANDS; then chmod 755 "$ZSH_INSTALL"/modules/commands.sh && source "$
 ###########
 # PROGRAM #
 ###########
+repo_version=$(get_repo_version)
+msg_title "Install More Wizard v$repo_version"
+new_line
+
 showInstallationMessage() {
   new_line
   msg_title "What do you want to install/reinstall?"

@@ -1,5 +1,7 @@
 # Installation
 
+Current version: **v1.0.0** (source of truth: [`VERSION`](./VERSION))
+
 ## Prerequisites
 - A Unix-like operating system: macOS, Linux, BSD. 
 - [Zsh](https://www.zsh.org) should be installed (v4.3.9 or more recent is fine but we prefer 5.0.8 and newer). If not pre-installed (run `zsh --version` to confirm), check the following wiki instructions here: [Installing ZSH](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH)

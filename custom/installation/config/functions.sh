@@ -76,3 +76,12 @@ toLower() {
     msg_error "This function expects exactly 1 parameter. None or too many are given."
   fi
 }
+
+get_repo_version() {
+  local version_file="$HOME/.oh-my-zsh/VERSION"
+  if [ -f "$version_file" ]; then
+    tr -d '\r\n' <"$version_file"
+  else
+    echo "unknown"
+  fi
+}
