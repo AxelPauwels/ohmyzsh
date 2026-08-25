@@ -9,10 +9,8 @@ alias zshShowPluginWorkRavago="cat ${path_to_zsh_custom}/plugins/${plugin_name}/
 alias zshEditPluginWorkRavago="open -a \"${editor}\" ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh"
 
 # Aliases
-alias cdWms='cd ~/Ravago/Projects/wms-front'
-alias cdWmsWepApp='cd ~/Ravago/Projects/wms-web-app'
-alias cdIms='cd ~/Ravago/Projects/ims-front'
-alias cdImsOffice='cd ~/Ravago/Projects/ims-office-front'
+alias cdWms='cd ~/Projects/wms-front'
+alias cdWmsWepApp='cd ~/Projects/wms-web-app'
 alias cdZsh='cd ~/.oh-my-zsh'
 #alias huskySetExecutable='chmod ug+x .husky/* && chmod ug+x .git/hooks/*'
 #alias npmInstall='npm ci -s' ### -s is silent to supress the warnings

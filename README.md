@@ -1,6 +1,6 @@
 # Installation
 
-Current version: **v2.0.0** (source of truth: [`VERSION`](./VERSION))
+Current version: **v2.1.1** (source of truth: [`VERSION`](./VERSION))
 
 ## Prerequisites
 - A Unix-like operating system: macOS, Linux, BSD. 

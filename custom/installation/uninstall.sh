@@ -11,6 +11,9 @@ chmod 755 "$ZSH_INSTALL"/config/functions.sh && source "$ZSH_INSTALL"/config/fun
 chmod 755 "$ZSH_INSTALL"/config/messages.sh && source "$ZSH_INSTALL"/config/messages.sh
 chmod 755 "$ZSH_INSTALL"/config/modules.sh && source "$ZSH_INSTALL"/config/modules.sh
 
+# Always restore the cursor on exit/interrupt (the menu engine hides it).
+install_cursor_guard
+
 # Module sources provide the variables (paths, defaults keys) and check_* helpers
 # the uninstallers rely on.
 source "$ZSH_INSTALL"/modules/homebrew.sh

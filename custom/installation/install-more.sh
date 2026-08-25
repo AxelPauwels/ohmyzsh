@@ -11,6 +11,9 @@ chmod 755 "$ZSH_INSTALL"/config/functions.sh && source "$ZSH_INSTALL"/config/fun
 chmod 755 "$ZSH_INSTALL"/config/messages.sh && source "$ZSH_INSTALL"/config/messages.sh
 chmod 755 "$ZSH_INSTALL"/config/modules.sh && source "$ZSH_INSTALL"/config/modules.sh
 
+# Always restore the cursor on exit/interrupt (the menu engine hides it).
+install_cursor_guard
+
 #############
 # VARIABLES #
 #############
@@ -22,7 +25,10 @@ selected_option=0
 if $MOD_XTOOLS; then chmod 755 "$ZSH_INSTALL"/modules/xtools.sh && source "$ZSH_INSTALL"/modules/xtools.sh; fi
 if $MOD_HOMEBREW; then chmod 755 "$ZSH_INSTALL"/modules/homebrew.sh && source "$ZSH_INSTALL"/modules/homebrew.sh; fi
 if $MOD_PYENV; then chmod 755 "$ZSH_INSTALL"/modules/pyenv.sh && source "$ZSH_INSTALL"/modules/pyenv.sh; fi
+if $MOD_NODE; then chmod 755 "$ZSH_INSTALL"/modules/node.sh && source "$ZSH_INSTALL"/modules/node.sh; fi
+if $MOD_NVM; then chmod 755 "$ZSH_INSTALL"/modules/nvm.sh && source "$ZSH_INSTALL"/modules/nvm.sh; fi
 if $MOD_MAC; then chmod 755 "$ZSH_INSTALL"/modules/mac.sh && source "$ZSH_INSTALL"/modules/mac.sh; fi
+if $MOD_JETBRAINS; then chmod 755 "$ZSH_INSTALL"/modules/jetbrains.sh && source "$ZSH_INSTALL"/modules/jetbrains.sh; fi
 if $MOD_GITHUB_CLI; then chmod 755 "$ZSH_INSTALL"/modules/github-cli.sh && source "$ZSH_INSTALL"/modules/github-cli.sh; fi
 if $MOD_WARP; then chmod 755 "$ZSH_INSTALL"/modules/warp.sh && source "$ZSH_INSTALL"/modules/warp.sh; fi
 if $MOD_COMMANDS; then chmod 755 "$ZSH_INSTALL"/modules/commands.sh && source "$ZSH_INSTALL"/modules/commands.sh; fi
@@ -59,13 +65,25 @@ fi
 if $MOD_HOMEBREW; then
   menu_labels+=("Homebrew")
   menu_checks+=("check_install_brew")
-  menu_actions+=("check_install_brew")
+  menu_actions+=("install_brew")
 fi
 
 if $MOD_PYENV; then
   menu_labels+=("Pyenv")
   menu_checks+=("check_install_pyenv")
   menu_actions+=("install_pyenv")
+fi
+
+if $MOD_NODE; then
+  menu_labels+=("Node (node + npm)")
+  menu_checks+=("check_install_node")
+  menu_actions+=("install_node")
+fi
+
+if $MOD_NVM; then
+  menu_labels+=("Nvm")
+  menu_checks+=("check_install_nvm")
+  menu_actions+=("install_nvm")
 fi
 
 if $MOD_MAC; then
@@ -76,6 +94,12 @@ if $MOD_MAC; then
   menu_labels+=("Mac Finder hidden files")
   menu_checks+=("check_install_finder_hidden")
   menu_actions+=("install_finder_hidden")
+fi
+
+if $MOD_JETBRAINS; then
+  menu_labels+=("Jetbrains IntelliJ Plugins")
+  menu_checks+=("check_install_jetbrains")
+  menu_actions+=("install_jetbrains_plugins")
 fi
 
 if $MOD_GITHUB_CLI; then

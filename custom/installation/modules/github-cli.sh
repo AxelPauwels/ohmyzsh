@@ -19,7 +19,7 @@ install_github_cli() {
 
 check_install_github_cli() {
   if command_exists gh; then
-    msg_found "Installed"
+    msg_found_version "Installed" "$(extract_version "$(gh --version 2>/dev/null | head -1)")"
   else
     msg_not_found "Not installed"
   fi
