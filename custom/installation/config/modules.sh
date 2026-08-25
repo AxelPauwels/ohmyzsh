@@ -11,6 +11,7 @@ export MOD_ITERM=true
 export MOD_ZSHRC=true
 export MOD_PYENV=true
 export MOD_MAC=true
+export MOD_JETBRAINS=true
 export MOD_GITHUB_CLI=true
 export MOD_COMMANDS=true
 
