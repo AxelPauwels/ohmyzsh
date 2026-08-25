@@ -89,7 +89,7 @@ installationOverview() {
     check_install_warp
   fi
 
-  if $MOD_ITERM; then
+  if $MOD_WARP; then
     message="Warp theme "
     msg_inline "$message"
 
@@ -105,6 +105,7 @@ installationOverview() {
 }
 
 restartYourTerminalMessage() {
+  msg_italic ""
   msg_italic "Restart your terminal to load all changes (certainly if your font has changed)"
   msg_italic "Install more stuff: ~/.oh-my-zsh/custom/installation/install-more.sh"
   msg_italic "Configure your own prompt: ~/.oh-my-zsh/custom/installation/configure-powerlevel.sh"
@@ -178,7 +179,7 @@ if $MOD_WARP; then
   manual_checks+=("check_install_warp")
   manual_actions+=("install_warp_manually")
 fi
-if $MOD_ITERM; then
+if $MOD_WARP; then
   manual_labels+=("Warp theme")
   manual_checks+=("check_install_warp_theme")
   manual_actions+=("install_warp_theme_manually")
