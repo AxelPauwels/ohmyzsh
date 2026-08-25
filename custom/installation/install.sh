@@ -107,7 +107,7 @@ installationOverview() {
 restartYourTerminalMessage() {
   msg_italic "Restart your terminal to load all changes (certainly if your font has changed)"
   msg_italic "Install more stuff: ~/.oh-my-zsh/custom/installation/install-more.sh"
-  msg_italic "Configure your own prompt: ~/.oh-my-zsh/custom/installation/configure.sh"
+  msg_italic "Configure your own prompt: ~/.oh-my-zsh/custom/installation/configure-powerlevel.sh"
 }
 
 showInstallationMessage() {

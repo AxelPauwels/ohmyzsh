@@ -40,7 +40,7 @@ while true; do
   case $choice in
   1)
     rm -rf "$HOME/.p10k.zsh" # Need to be deleted, otherwise the wizard script (p10k configure) will not be started
-    exec zsh
+    exec zsh -ic 'p10k configure; exec zsh'
     break
     ;;
   2)

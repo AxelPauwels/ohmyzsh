@@ -6,10 +6,6 @@
 ##TODO: copy first latest brew ? install with brew /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 ##TODO: Add jetbrains config?
-##TODO: Add tree command?
-##TODO: suggest keyrepeat
-##TODO: Add homebrew command?
-
 
 ZSH_CUSTOM="$HOME/.oh-my-zsh/custom/"
 ZSH_INSTALL="$HOME/.oh-my-zsh/custom/installation"
