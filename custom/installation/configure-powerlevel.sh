@@ -10,6 +10,9 @@ chmod 755 "$ZSH_INSTALL"/config/variables.sh && source "$ZSH_INSTALL"/config/var
 chmod 755 "$ZSH_INSTALL"/config/functions.sh && source "$ZSH_INSTALL"/config/functions.sh
 chmod 755 "$ZSH_INSTALL"/config/messages.sh && source "$ZSH_INSTALL"/config/messages.sh
 
+# Always restore the cursor on exit/interrupt (the menu engine hides it).
+install_cursor_guard
+
 #############
 # FUNCTIONS #
 #############

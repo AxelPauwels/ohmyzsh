@@ -139,6 +139,17 @@ _menu_clear_below()  { printf '\033[J' >&2; }
 _menu_hide_cursor()  { printf '\033[?25l' >&2; }
 _menu_show_cursor()  { printf '\033[?25h' >&2; }
 
+# Signal-safe terminal restore. The menu engine hides the cursor; without this
+# guard a Ctrl-C (SIGINT) or kill while the menu is drawn would leave the user's
+# terminal with a permanently invisible cursor. Each top-level wizard calls this
+# once, right after sourcing functions.sh, so the cursor is always restored on
+# exit or interrupt no matter where the script dies.
+install_cursor_guard() {
+  trap '_menu_show_cursor' EXIT
+  trap '_menu_show_cursor; exit 130' INT
+  trap '_menu_show_cursor; exit 143' TERM
+}
+
 run_action_menu() {
   local count=${#menu_labels[@]}
   local selected=${menu_selected:-0}
