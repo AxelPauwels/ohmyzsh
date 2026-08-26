@@ -9,8 +9,10 @@ plugins=(custom-ssh)
 
 ## Variables
 plugin_name='custom-ssh'
+
 editor='IntelliJ IDEA' # An app could be found by command `ls /Applications` without the `.app` extension
-path_to_zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+path_to_zsh_custom=`${ZSH_CUSTOM}:-${HOME/.oh-my-zsh/custom}`
 
 ## Private Functions
 Private Functions are not meant to be to call directly from CLI, but are more likely used in an alias
@@ -22,11 +24,11 @@ Private Functions are not meant to be to call directly from CLI, but are more li
 
 ## Aliases (this plugin)
 
-| Alias            | Command                                                                                       |
-|:-----------------|:----------------------------------------------------------------------------------------------|
-| zshCdPluginSsh   | cd ${path_to_zsh_custom}/plugins/${plugin_name}                                               |
-| zshShowPluginSsh | cat ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh                    |
-| zshEditPluginSsh | open -a \"${editor}\" ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh  |
+| Alias            | Command                                                                                        |
+|:-----------------|:-----------------------------------------------------------------------------------------------|
+| zshCdPluginSsh   | `cd ${path_to_zsh_custom}/plugins/${plugin_name}`                                              |
+| zshShowPluginSsh | `cat ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh`                   |
+| zshEditPluginSsh | `open -a \"${editor}\" ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh` |
 
 ## Aliases
 
