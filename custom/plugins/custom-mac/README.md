@@ -9,8 +9,10 @@ plugins=(custom-mac)
 
 ## Variables
 plugin_name='custom-mac'
+
 editor='IntelliJ IDEA' # An app could be found by command `ls /Applications` without the `.app` extension
-path_to_zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+path_to_zsh_custom=`${ZSH_CUSTOM}:-${HOME/.oh-my-zsh/custom}`
 
 ## Private Functions
 Private Functions are not meant to be to call directly from CLI, but are more likely used in an alias
@@ -30,11 +32,11 @@ initialKeyRepeat: the value for "Delay Until Repeat" in System Preferences > Key
 
 ## Aliases (this plugin)
 
-| Alias            | Command                                                                                      |
-|:-----------------|:---------------------------------------------------------------------------------------------|
-| zshCdPluginMac   | cd ${path_to_zsh_custom}/plugins/${plugin_name}                                              |
-| zshShowPluginMac | cat ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh                   |
-| zshEditPluginMac | open -a \"${editor}\" ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh |
+| Alias            | Command                                                                                        |
+|:-----------------|:-----------------------------------------------------------------------------------------------|
+| zshCdPluginMac   | `cd ${path_to_zsh_custom}/plugins/${plugin_name}`                                              |
+| zshShowPluginMac | `cat ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh`                   |
+| zshEditPluginMac | `open -a \"${editor}\" ${path_to_zsh_custom}/plugins/${plugin_name}/${plugin_name}.plugin.zsh` |
 
 ## Aliases
 | Alias                                              | Command                     |  

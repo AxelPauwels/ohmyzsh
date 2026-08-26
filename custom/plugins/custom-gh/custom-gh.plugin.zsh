@@ -10,6 +10,4 @@ alias zshEditPluginGh="open -a \"${editor}\" ${path_to_zsh_custom}/plugins/${plu
 
 
 # Aliases
-# alias ghPr='gh pr create --assignee @me --reviewer Roel-Frison_ravago,kevin-jannis_ravago,dennis-gadomski_ravago,teun-verhaert_ravago,bert-fonteyn_ravago,tim-frijters_ravago,niels-hamelryck_ravago'
-# alias ghPr='gh pr create --base=' # will be defaulted to 'master' when omitted
 alias ghPrDevelopment='gh pr create --base=development '
