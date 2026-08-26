@@ -49,12 +49,17 @@ uninstall_fonts() {
 uninstall_color_preset_and_font() {
   msg_title "Uninstall iTerm color & font settings"
 
+  local plist_backup
+  plist_backup="$(latest_datetime_backup "$iterm2_plist")"
   if has_backup iterm2_plist; then
     restore_path "$iterm2_plist" iterm2_plist
     msg_found "Restored original iTerm2 preferences"
+  elif [ -n "$plist_backup" ]; then
+    cp "$plist_backup" "$iterm2_plist"
+    msg_found "Restored iTerm2 preferences from $plist_backup"
   elif [ -f "$iterm2_plist.old" ]; then
-    mv "$iterm2_plist.old" "$iterm2_plist"
-    msg_found "Restored iTerm2 preferences from .old backup"
+    cp "$iterm2_plist.old" "$iterm2_plist"
+    msg_found "Restored iTerm2 preferences from legacy .old backup"
   else
     msg_warning "No plist backup found; removing our custom defaults only"
   fi
@@ -67,7 +72,7 @@ uninstall_color_preset_and_font() {
   # Remove the imported color scheme directory we created.
   restore_path "$ZSH_CUSTOM/schemes" iterm_schemes
 
-  rm -f "$iterm2_plist.old"
+  # Timestamped backups are intentionally kept so no file is ever lost.
   killall cfprefsd 2>/dev/null
 
   msg_installed "iTerm color & font settings uninstalled (restart iTerm2)"
@@ -91,15 +96,20 @@ uninstall_theme_pk10() {
 uninstall_prompt_pk10() {
   msg_title "Uninstall Prompt Powerlevel10k"
 
+  local p10k_backup
+  p10k_backup="$(latest_datetime_backup "$HOME/.p10k.zsh")"
   if has_backup p10k_config; then
     restore_path "$HOME/.p10k.zsh" p10k_config
+  elif [ -n "$p10k_backup" ]; then
+    cp "$p10k_backup" "$HOME/.p10k.zsh"
+    msg_found "Restored ~/.p10k.zsh from $p10k_backup"
   elif [ -f "$HOME/.p10k.zsh.old" ]; then
-    mv "$HOME/.p10k.zsh.old" "$HOME/.p10k.zsh"
+    cp "$HOME/.p10k.zsh.old" "$HOME/.p10k.zsh"
+    msg_found "Restored ~/.p10k.zsh from legacy .old backup"
   else
     rm -f "$HOME/.p10k.zsh"
   fi
 
-  rm -f "$HOME/.p10k.zsh.old"
   msg_installed "Prompt Powerlevel10k uninstalled"
 }
 
@@ -116,12 +126,11 @@ check_install_prompt_pk10() {
 # the bundled resources / files the uninstaller actually removes), so the menu
 # visibly flips to "Not installed" right after uninstalling.
 
+# The installer's own check is the authoritative one here: an exact file compare
+# would report "Not installed" as soon as the user appends a single line to their
+# ~/.zshrc, which is normal and expected.
 status_zshrc() {
-  if [ -f "$HOME/.zshrc" ] && cmp -s "$HOME/.zshrc" "$ZSH_INSTALL/resources/.zshrc"; then
-    msg_found "Installed"
-  else
-    msg_not_found "Not installed"
-  fi
+  check_override_zshrc_file
 }
 
 # ----- Theme Agnoster ------------------------------------------------------
@@ -142,15 +151,20 @@ uninstall_theme_agnoster() {
 uninstall_zshrc() {
   msg_title "Uninstall zshrc"
 
+  local zshrc_backup
+  zshrc_backup="$(latest_datetime_backup "$HOME/.zshrc")"
   if has_backup zshrc; then
     restore_path "$HOME/.zshrc" zshrc
+  elif [ -n "$zshrc_backup" ]; then
+    cp "$zshrc_backup" "$HOME/.zshrc"
+    msg_found "Restored ~/.zshrc from $zshrc_backup"
   elif [ -f "$HOME/.zshrc.old" ]; then
-    mv "$HOME/.zshrc.old" "$HOME/.zshrc"
+    cp "$HOME/.zshrc.old" "$HOME/.zshrc"
+    msg_found "Restored ~/.zshrc from legacy .old backup"
   else
     rm -f "$HOME/.zshrc"
   fi
 
-  rm -f "$HOME/.zshrc.old"
   msg_installed "zshrc uninstalled"
 }
 
@@ -159,7 +173,15 @@ uninstall_keyrepeat() {
   msg_title "Uninstall Mac Cursor speed"
   restore_defaults -g KeyRepeat keyrepeat_key
   restore_defaults -g InitialKeyRepeat keyrepeat_delay
+  rm -f "$keyrepeat_custom_state"
   msg_installed "Mac Cursor speed reset (logout/login to take effect)"
+}
+
+# ----- Mac Trackpad secondary click ----------------------------------------
+uninstall_trackpad_secondary_click() {
+  msg_title "Uninstall Mac Trackpad secondary click"
+  _trackpad_secondary_click_apply off
+  msg_installed "Trackpad secondary click disabled"
 }
 
 # ----- Mac Finder hidden files ---------------------------------------------

@@ -157,7 +157,49 @@ _jetbrains_download_plugin() {
   return 0
 }
 
-# Guard: IDE present + build resolvable. Returns non-zero on failure.
+# Echo the on-disk path (plugin dir or bare .jar) for a given plugin id.
+_jetbrains_plugin_path() {
+  local want="$1" dir p jar id
+  dir=$(_jetbrains_plugins_dir)
+  [ -d "$dir" ] || return
+  for p in "$dir"/*; do
+    [ -e "$p" ] || continue
+    if [ -d "$p" ]; then
+      for jar in "$p"/lib/*.jar "$p"/*.jar; do
+        [ -e "$jar" ] || continue
+        id=$(unzip -p "$jar" META-INF/plugin.xml 2>/dev/null | grep -m1 -o '<id>[^<]*</id>')
+        if [ -n "$id" ]; then
+          id=${id#<id>}; id=${id%</id>}
+          [ "$id" = "$want" ] && { echo "$p"; return; }
+          break
+        fi
+      done
+    elif [[ "$p" == *.jar ]]; then
+      id=$(unzip -p "$p" META-INF/plugin.xml 2>/dev/null | grep -m1 -o '<id>[^<]*</id>')
+      if [ -n "$id" ]; then
+        id=${id#<id>}; id=${id%</id>}
+        [ "$id" = "$want" ] && { echo "$p"; return; }
+      fi
+    fi
+  done
+}
+
+# Remove an installed plugin from disk. $1 = plugin id, $2 = human name.
+_jetbrains_remove_plugin() {
+  local id="$1" name="$2" path
+  path=$(_jetbrains_plugin_path "$id")
+  if [ -z "$path" ]; then
+    msg_warning "$name not found on disk"
+    return 1
+  fi
+  msg_searching "Removing $name"
+  if rm -rf "$path"; then
+    msg_installed "$name removed"
+    return 0
+  fi
+  msg_error "Failed to remove $name"
+  return 1
+}
 _jetbrains_precheck() {
   if [ ! -d "$_jetbrains_app" ]; then
     msg_error "IntelliJ IDEA not found at $_jetbrains_app"
@@ -170,117 +212,150 @@ _jetbrains_precheck() {
   return 0
 }
 
-# Install every missing plugin in one go.
-_jetbrains_install_all() {
-  msg_title "IntelliJ IDEA plugins"
-  _jetbrains_precheck || return
-
-  local installed missing_ids=() missing_names=() i
-  installed=$(_jetbrains_installed_ids)
-  for i in "${!_jetbrains_plugin_ids[@]}"; do
-    msg_searching "Checking ${_jetbrains_plugin_names[$i]}"
-    if grep -qxF "${_jetbrains_plugin_ids[$i]}" <<<"$installed"; then
-      msg_found "Already installed"
-    else
-      msg_not_found "Not installed"
-      missing_ids+=("${_jetbrains_plugin_ids[$i]}")
-      missing_names+=("${_jetbrains_plugin_names[$i]}")
-    fi
-  done
-
-  if [ ${#missing_ids[@]} -eq 0 ]; then
-    new_line
-    msg_installed "All plugins already installed"
-    return
-  fi
-
-  new_line
-  local ok=0
-  for i in "${!missing_ids[@]}"; do
-    if _jetbrains_download_plugin "${missing_ids[$i]}" "${missing_names[$i]}"; then
-      ok=$((ok + 1))
-    fi
-  done
-
-  new_line
-  msg_installed "Installed $ok/${#missing_ids[@]} missing plugin(s). Restart IntelliJ IDEA to load them."
-}
-
-# Install a single plugin (skips if already installed).
-_jetbrains_install_one() {
-  local id="$1" name="$2"
-  msg_title "Installing $name"
-  _jetbrains_precheck || return
-
-  if _jetbrains_plugin_installed "$id"; then
-    msg_found "Already installed"
-    return
-  fi
-
-  if _jetbrains_download_plugin "$id" "$name"; then
-    new_line
-    msg_installed "Restart IntelliJ IDEA to load $name."
-  fi
-}
-
-# --- Per-plugin menu checks --------------------------------------------------
-_jb_check() {
-  if _jetbrains_plugin_installed "$1"; then
-    msg_found "Installed"
-  else
-    msg_not_found "Not installed"
-  fi
-}
-
-c_jb_atom() { _jb_check "com.mallowigi"; }
-c_jb_rain() { _jb_check "izhangzhihao.rainbow.brackets"; }
-c_jb_copilot() { _jb_check "com.github.copilot"; }
-c_jb_nx() { _jb_check "dev.nx.console"; }
-c_jb_scss() { _jb_check "com.wix.scss.lint"; }
-c_jb_spb() { _jb_check "manjaro.spb"; }
-
-# --- Per-plugin menu actions -------------------------------------------------
-i_jb_atom() { _jetbrains_install_one "com.mallowigi" "Atom Material Icons"; }
-i_jb_rain() { _jetbrains_install_one "izhangzhihao.rainbow.brackets" "Rainbow Brackets"; }
-i_jb_copilot() { _jetbrains_install_one "com.github.copilot" "GitHub Copilot"; }
-i_jb_nx() { _jetbrains_install_one "dev.nx.console" "Nx Console"; }
-i_jb_scss() { _jetbrains_install_one "com.wix.scss.lint" "Scss-lint"; }
-i_jb_spb() { _jetbrains_install_one "manjaro.spb" "Sonic Progress Bar"; }
-
 # --- Submenu -----------------------------------------------------------------
+# Checkbox-style plugin manager (mirrors the Powerlevel10k segments menu).
+# Checked = plugin should be installed. On save, plugins toggled on that are
+# missing get downloaded, and plugins toggled off that are present get removed.
 install_jetbrains_plugins() {
-  local menu_title="IntelliJ IDEA plugins:"
-  local menu_header=""
-  local -a menu_labels=(
-    "Install all missing plugins"
-    "Atom Material Icons"
-    "Rainbow Brackets"
-    "GitHub Copilot"
-    "Nx Console"
-    "Scss-lint"
-    "Sonic Progress Bar"
-  )
-  local -a menu_checks=(
-    ""
-    "c_jb_atom"
-    "c_jb_rain"
-    "c_jb_copilot"
-    "c_jb_nx"
-    "c_jb_scss"
-    "c_jb_spb"
-  )
-  local -a menu_actions=(
-    "_jetbrains_install_all"
-    "i_jb_atom"
-    "i_jb_rain"
-    "i_jb_copilot"
-    "i_jb_nx"
-    "i_jb_scss"
-    "i_jb_spb"
-  )
-  local menu_selected=0
-  run_action_menu
-  clear
+  if [ ! -d "$_jetbrains_app" ]; then
+    msg_title "IntelliJ IDEA plugins"
+    msg_error "IntelliJ IDEA not found at $_jetbrains_app"
+    new_line
+    msg_dimmed "Press any key to return."
+    read_menu_key >/dev/null
+    menu_action_submenu=1
+    return
+  fi
+
+  local n=${#_jetbrains_plugin_ids[@]}
+  local -a seg_state seg_initial
+  local installed i
+
+  start_spinner "Checking installed IntelliJ IDEA plugins…"
+  installed=$(_jetbrains_installed_ids)
+  for ((i = 0; i < n; i++)); do
+    if grep -qxF "${_jetbrains_plugin_ids[$i]}" <<<"$installed"; then
+      seg_state[$i]=1
+    else
+      seg_state[$i]=0
+    fi
+    seg_initial[$i]=${seg_state[$i]}
+  done
+  stop_spinner
+
+  local selected=0
+  local save_index=$n
+  local eol=$'\033[K'
+  local key cursor box
+
+  _menu_hide_cursor
+  _menu_reset_screen
+  while true; do
+    _menu_home
+    msg_title "IntelliJ IDEA plugins$eol"
+    msg "$eol"
+    msg_dimmed "Toggle plugins on/off. Checked = installed. Save installs missing and removes unchecked.$eol"
+    msg "$eol"
+
+    for ((i = 0; i < n; i++)); do
+      cursor="  "
+      [ "$selected" -eq "$i" ] && cursor="➤ "
+      if [ "${seg_state[$i]}" -eq 1 ]; then box="[x]"; else box="[ ]"; fi
+      msg " $cursor$box ${_jetbrains_plugin_names[$i]}$eol"
+    done
+
+    msg "$eol"
+    cursor="  "
+    [ "$selected" -eq "$save_index" ] && cursor="➤ "
+    msg " ${cursor}✔ Save & apply$eol"
+    msg "$eol"
+    msg_dimmed "↑/↓ move · Space/Enter toggle · Enter on Save to confirm · q to cancel$eol"
+    _menu_clear_below
+
+    key=$(read_menu_key)
+    case "$key" in
+    $'\x1b[A')
+      selected=$((selected - 1))
+      [ "$selected" -lt 0 ] && selected=$save_index
+      ;;
+    $'\x1b[B')
+      selected=$((selected + 1))
+      [ "$selected" -gt "$save_index" ] && selected=0
+      ;;
+    " ")
+      if [ "$selected" -lt "$n" ]; then
+        seg_state[$selected]=$((1 - seg_state[$selected]))
+      fi
+      ;;
+    "" | $'\n' | $'\r')
+      if [ "$selected" -lt "$n" ]; then
+        seg_state[$selected]=$((1 - seg_state[$selected]))
+      else
+        _menu_clear_below
+        new_line
+        _menu_show_cursor
+
+        local changed=0 j
+        for ((j = 0; j < n; j++)); do
+          [ "${seg_state[$j]}" -ne "${seg_initial[$j]}" ] && changed=1
+        done
+        if [ "$changed" -eq 0 ]; then
+          msg_warning "No changes to apply."
+          break
+        fi
+
+        printf '%s' "Apply changes to IntelliJ IDEA plugins? (y/N): " >&2
+        local confirm
+        IFS= read -rsn1 confirm
+        printf '%s\n' "$confirm" >&2
+        if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+          msg_warning "No changes applied."
+          break
+        fi
+
+        new_line
+        if ! _jetbrains_precheck; then
+          new_line
+          msg_dimmed "Press any key to return."
+          read_menu_key >/dev/null
+          break
+        fi
+
+        local ok=0 fail=0
+        for ((j = 0; j < n; j++)); do
+          [ "${seg_state[$j]}" -eq "${seg_initial[$j]}" ] && continue
+          if [ "${seg_state[$j]}" -eq 1 ]; then
+            if _jetbrains_download_plugin "${_jetbrains_plugin_ids[$j]}" "${_jetbrains_plugin_names[$j]}"; then
+              ok=$((ok + 1))
+            else
+              fail=$((fail + 1))
+            fi
+          else
+            if _jetbrains_remove_plugin "${_jetbrains_plugin_ids[$j]}" "${_jetbrains_plugin_names[$j]}"; then
+              ok=$((ok + 1))
+            else
+              fail=$((fail + 1))
+            fi
+          fi
+        done
+
+        new_line
+        if [ "$fail" -eq 0 ]; then
+          msg_installed "Applied $ok change(s). Restart IntelliJ IDEA to load them."
+        else
+          msg_warning "Applied $ok change(s), $fail failed. Restart IntelliJ IDEA to load them."
+        fi
+        break
+      fi
+      ;;
+    q | Q)
+      msg_warning "No changes applied."
+      break
+      ;;
+    esac
+  done
+
+  _menu_show_cursor
   menu_action_submenu=1
 }
 

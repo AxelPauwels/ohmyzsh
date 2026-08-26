@@ -33,9 +33,9 @@ _install_powerlevel10k() {
   if file_exists "$HOME/.p10k.zsh"; then
     msg_found "Found"
 
-    msg_searching "Copying existing powerlevel10k config file as backup (~/.p10k.zsh.old)"
-    cp "$HOME/.p10k.zsh" "$HOME/.p10k.zsh.old"
-    msg_found "Copied"
+    msg_searching "Copying existing powerlevel10k config file as a timestamped backup"
+    p10k_backup=$(backup_file_datetime "$HOME/.p10k.zsh")
+    msg_found "Backed up to $p10k_backup"
 
     msg_searching "Overriding existing powerlevel10k config file"
     cp "$ZSH_INSTALL/resources/themes/.p10k.zsh" "$HOME/"
