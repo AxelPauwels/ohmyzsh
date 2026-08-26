@@ -14,5 +14,4 @@ alias zshEditPluginZshBase="open -a \"${editor}\" ${path_to_zsh_custom}/plugins/
 alias zshReload="source ${path_to_zshrc}"
 alias zshEditZshrc="open -a \"${editor}\" ${path_to_zshrc}"
 alias zshInstall="${path_to_zsh_custom}/installation/install.sh"
-alias zshInstallMore="${path_to_zsh_custom}/installation/install-more.sh"
-alias zshInstallPowerlevel10k="${path_to_zsh_custom}/installation/configure-powerlevel.sh"
+alias zshUninstall="${path_to_zsh_custom}/installation/uninstall.sh"

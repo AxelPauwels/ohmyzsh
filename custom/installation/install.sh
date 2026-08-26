@@ -47,7 +47,18 @@ restartYourTerminalMessage() {
   msg_italic "Restart your terminal to load all changes (certainly if your font has changed)"
 }
 
-_run_configure() { bash "$ZSH_INSTALL"/configure-powerlevel.sh; printf '\033[?25h' >&2; clear; exit; }
+_run_configure() {
+  local rc=0
+  bash "$ZSH_INSTALL"/configure-powerlevel.sh || rc=$?
+  printf '\033[?25h' >&2
+  clear
+  # Exit code 90 means the user quit the configure wizard, so return to this menu.
+  if [ "$rc" -eq 90 ]; then
+    menu_action_submenu=1
+    return 0
+  fi
+  exit
+}
 
 ###########
 # PROGRAM #
@@ -100,6 +111,7 @@ if $MOD_NVM; then
 fi
 if $MOD_MAC; then
   menu_labels+=("Mac Cursor speed");            menu_checks+=("check_install_keyrepeat");              menu_actions+=("install_keyrepeat")
+  menu_labels+=("Mac Trackpad secondary click"); menu_checks+=("check_install_trackpad_secondary_click"); menu_actions+=("install_trackpad_secondary_click")
   menu_labels+=("Mac Finder hidden files");     menu_checks+=("check_install_finder_hidden");          menu_actions+=("install_finder_hidden")
 fi
 if $MOD_JETBRAINS; then
@@ -113,7 +125,7 @@ if $MOD_COMMANDS; then
 fi
 
 # --- Prompt configuration ---
-menu_labels+=("Configure your own prompt");     menu_checks+=("");                                     menu_actions+=("_run_configure")
+menu_labels+=("Configure your own prompt");     menu_checks+=("check_configure_prompt");               menu_actions+=("_run_configure")
 
 menu_title="Install Wizard v$repo_version"
 menu_header="What do you want to install/reinstall?"
@@ -121,4 +133,6 @@ menu_selected=0
 run_action_menu
 
 clear
-restartYourTerminalMessage
+new_line
+msg_installed "Reloading your shell, please wait…"
+exec zsh

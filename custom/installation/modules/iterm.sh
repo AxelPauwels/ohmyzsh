@@ -112,9 +112,9 @@ _override_plist() {
     if cmp -s "$source_path" "$destination_path"; then
       msg_found "Already up-to-date"
     else
-      msg_searching "Copying existing plist file as backup (~/Library/Preferences/com.googlecode.iterm2.plist.old)"
-      cp "$destination_path" "$destination_path.old"
-      msg_found "Copied"
+      msg_searching "Copying existing plist file as a timestamped backup"
+      plist_backup=$(backup_file_datetime "$destination_path")
+      msg_found "Backed up to $plist_backup"
 
       msg_searching "Overriding existing plist file"
       cp "$source_path" "$destination_path"

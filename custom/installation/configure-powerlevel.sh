@@ -17,17 +17,23 @@ install_cursor_guard
 # FUNCTIONS #
 #############
 _configure_p10k_wizard() {
+  p10k_state_set install full
+  p10k_state_set customized 0
   rm -rf "$HOME/.p10k.zsh" # Need to be deleted, otherwise the wizard script (p10k configure) will not be started
   exec zsh -ic 'p10k configure; exec zsh'
 }
 
 _configure_p10k_preset() {
+  p10k_action_ran=1
+  p10k_state_set install axel
+  p10k_state_set customized 0
   cp "$ZSH_INSTALL"/resources/themes/.p10k.zsh "$HOME/"
   msg_success "Applied Axel's Powerlevel10k configuration preset."
   msg_dimmed "Restart your terminal (or run 'source ~/.p10k.zsh') to see the changes."
 }
 
 _configure_p10k_nickname() {
+  p10k_action_ran=1
   p10k_config="$HOME/.p10k.zsh"
   if [ ! -f "$p10k_config" ]; then
     cp "$ZSH_INSTALL"/resources/themes/.p10k.zsh "$p10k_config"
@@ -46,6 +52,7 @@ _configure_p10k_nickname() {
     END { exit(replaced ? 0 : 1) }
   ' "$p10k_config" >"$temp_p10k_config"; then
     mv "$temp_p10k_config" "$p10k_config"
+    p10k_state_set customized 1
     msg_success "Saved Powerlevel10k username/nickname."
   else
     rm -f "$temp_p10k_config"
@@ -137,13 +144,13 @@ _configure_p10k_segments() {
       cursor="  "
       [ "$selected" -eq "$i" ] && cursor="➤ "
       if [ "${seg_state[$i]}" -eq 1 ]; then box="[x]"; else box="[ ]"; fi
-      msg "  $cursor$box ${seg_label[$i]}$eol"
+      msg " $cursor$box ${seg_label[$i]}$eol"
     done
 
     msg "$eol"
     cursor="  "
     [ "$selected" -eq "$save_index" ] && cursor="➤ "
-    msg "  ${cursor}✔ Save & apply$eol"
+    msg " ${cursor}✔ Save & apply$eol"
     msg "$eol"
     msg_dimmed "↑/↓ move · Space/Enter toggle · Enter on Save to confirm · q to cancel$eol"
     _menu_clear_below
@@ -178,6 +185,8 @@ _configure_p10k_segments() {
           _p10k_write_segments "$p10k_config" \
             "${seg_state[0]}" "${seg_state[1]}" "${seg_state[2]}" "${seg_state[3]}" "${seg_state[4]}" "${seg_state[5]}"
           msg_success "Saved Powerlevel10k segments."
+          p10k_state_set customized 1
+          p10k_action_ran=1
         else
           msg_warning "No changes applied."
         fi
@@ -204,11 +213,17 @@ menu_title="Configure Powerlevel Wizard v$repo_version"
 menu_header="How do you want to configure?"
 menu_labels=(
   "Use full Powerlevel10k configuration wizard"
-  "Use Axel Powerlevel10k configuration wizard preset"
+  "Use Axel Powerlevel10k configuration wizard preset (recommended)"
   "Change Powerlevel10k username/nickname"
   "Change Powerlevel10k segments"
 )
 menu_checks=()
+menu_sections=(
+  "Installation:"
+  ""
+  "Customization:"
+  ""
+)
 menu_actions=(
   "_configure_p10k_wizard"
   "_configure_p10k_preset"
@@ -216,9 +231,16 @@ menu_actions=(
   "_configure_p10k_segments"
 )
 menu_selected=0
+case "$(p10k_state_get install)" in
+full) menu_selected=0 ;;
+axel) menu_selected=1 ;;
+esac
 menu_footer="Note: You can finetune all segments, colors and more at '~/.p10k.zsh'"
 run_action_menu
 clear
-new_line
-msg_installed "Reloading your shell, please wait…"
-exec zsh
+
+# Whatever the user did here (applied a preset, changed segments, or just
+# quit), return control to the calling wizard so it lands back on the main
+# menu instead of terminating. Prompt changes take effect on the next shell.
+printf '\033[?25h' >&2
+exit 90

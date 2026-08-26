@@ -18,6 +18,47 @@ extract_version() {
   fi
 }
 
+# ============================================================================
+# Powerlevel10k configuration state
+# ----------------------------------------------------------------------------
+# Remembers which prompt "installation" the user picked (full wizard or Axel
+# preset) and whether they applied any customization (nickname/segments), so
+# the Configure Powerlevel menu can preselect the right option and the main
+# install wizard can show an accurate status next to "Configure your own
+# prompt".
+# ============================================================================
+P10K_STATE_FILE="${P10K_STATE_FILE:-$HOME/.oh-my-zsh/custom/.wizard-state/p10k}"
+
+# p10k_state_get <key>  -> prints the stored value (empty if unset)
+p10k_state_get() {
+  [ -f "$P10K_STATE_FILE" ] || return 0
+  grep -E "^$1=" "$P10K_STATE_FILE" 2>/dev/null | tail -1 | cut -d= -f2-
+}
+
+# p10k_state_set <key> <value>
+p10k_state_set() {
+  local key="$1" val="$2" tmp
+  mkdir -p "$(dirname "$P10K_STATE_FILE")"
+  touch "$P10K_STATE_FILE"
+  tmp="$(mktemp)"
+  grep -vE "^$key=" "$P10K_STATE_FILE" 2>/dev/null >"$tmp" || true
+  echo "$key=$val" >>"$tmp"
+  mv "$tmp" "$P10K_STATE_FILE"
+}
+
+# Status line for the "Configure your own prompt" menu entry.
+check_configure_prompt() {
+  local inst cust suffix=""
+  inst="$(p10k_state_get install)"
+  cust="$(p10k_state_get customized)"
+  [ "$cust" = "1" ] && suffix=" + Customization"
+  case "$inst" in
+  full) msg_found "Installed 'custom prompt'$suffix" ;;
+  axel) msg_found "Installed 'Axel preset'$suffix" ;;
+  *) msg_not_found "Not installed" ;;
+  esac
+}
+
 app_exists() {
   if command -v "$1" >/dev/null 2>&1 || [[ -d "/Applications/$1.app" ]]; then
     return 0 # exist
@@ -135,6 +176,8 @@ print_radio_option() {
 #   menu_header   : (optional) extra static lines shown under the title
 #   menu_labels   : array of option labels
 #   menu_checks   : (optional) array of check-function names (parallel)
+#   menu_sections : (optional) array of section headings (parallel); when set at
+#                   index i, the heading is printed above that item to group entries
 #   menu_actions  : (optional) array of action-function names (parallel)
 #   menu_hint     : (optional) footer hint
 #   menu_selected : (optional) initial index; updated on return
@@ -220,6 +263,10 @@ run_action_menu() {
       msg "$eol"
     fi
     for ((i = 0; i < count; i++)); do
+      if [ -n "${menu_sections[$i]:-}" ]; then
+        [ "$i" -gt 0 ] && msg "$eol"
+        msg_dimmed "${menu_sections[$i]}$eol"
+      fi
       if [ "$selected" -eq "$i" ]; then marker="[◉]"; else marker=" ◯ "; fi
       status_line="${_menu_status[$i]}"
       if [ -n "$status_line" ]; then
@@ -318,6 +365,35 @@ run_action_menu() {
 # ============================================================================
 
 WIZARD_BACKUP_DIR="${WIZARD_BACKUP_DIR:-$HOME/.oh-my-zsh/custom/.wizard-backups}"
+
+# backup_file_datetime <file_path>
+# Non-destructively backs up an existing file next to itself with a datetime
+# suffix, so earlier backups are never overwritten and no file is ever lost:
+#   ~/.zshrc  ->  ~/.zshrc.backup-2026-08-26_15-12-43
+# On success prints the backup path and returns 0. If the source file does not
+# exist, prints nothing and returns 1.
+backup_file_datetime() {
+  local src="$1"
+  [ -f "$src" ] || return 1
+  local ts backup
+  ts="$(date +%Y-%m-%d_%H-%M-%S)"
+  backup="${src}.backup-${ts}"
+  if [ -e "$backup" ]; then
+    local n=1
+    while [ -e "${backup}_${n}" ]; do n=$((n + 1)); done
+    backup="${backup}_${n}"
+  fi
+  cp "$src" "$backup"
+  printf '%s' "$backup"
+}
+
+# latest_datetime_backup <file_path>
+# Prints the path of the most recent backup created by backup_file_datetime for
+# the given source file (or nothing if none exist).
+latest_datetime_backup() {
+  local src="$1"
+  ls -1t "$src".backup-* 2>/dev/null | head -1
+}
 
 # has_backup <key>  -> returns 0 if a pristine snapshot exists
 has_backup() {

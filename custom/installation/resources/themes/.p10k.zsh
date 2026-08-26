@@ -1081,7 +1081,7 @@
 
   ##############################[ node_version: node.js version ]###############################
   # Node version color.
-  typeset -g POWERLEVEL9K_NODE_VERSION_FOREGROUND='#1E441D'
+  typeset -g POWERLEVEL9K_NODE_VERSION_FOREGROUND='#9CD79D'
   typeset -g POWERLEVEL9K_NODE_VERSION_BACKGROUND='#3C873A'
   # Show node version only when in a directory tree containing package.json.
   typeset -g POWERLEVEL9K_NODE_VERSION_PROJECT_ONLY=true
@@ -1159,7 +1159,7 @@
   ###[ package: name@version from package.json (https://docs.npmjs.com/files/package.json) ]####
   # Package color.
   typeset -g POWERLEVEL9K_PACKAGE_FOREGROUND='#EBADAD'
-  typeset -g POWERLEVEL9K_PACKAGE_BACKGROUND='#cc3534'
+  typeset -g POWERLEVEL9K_PACKAGE_BACKGROUND='#661B1A'
 
   # Package format. The following parameters are available within the expansion.
   #
@@ -1801,7 +1801,7 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   # php_version           # php version (https://www.php.net/)
   # laravel_version       # laravel php framework version (https://laravel.com/)
   # java_version          # java version (https://www.java.com/)
-  package               # name@version from package.json (https://docs.npmjs.com/files/package.json)
+  package                 # name@version from package.json (https://docs.npmjs.com/files/package.json)
   rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
   rvm                     # ruby version from rvm (https://rvm.io)
   fvm                     # flutter version management (https://github.com/leoafarias/fvm)

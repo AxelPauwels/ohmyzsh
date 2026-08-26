@@ -12,9 +12,9 @@ override_zshrc_file() {
   if file_exists "$zshrc_path"; then
     msg_found "Found"
 
-    msg_searching "Copying existing zshrc file as backup (~/.zshrc.old)"
-    cp "$zshrc_path" "$zshrc_path.old"
-    msg_found "Copied"
+    msg_searching "Copying existing zshrc file as a timestamped backup"
+    zshrc_backup=$(backup_file_datetime "$zshrc_path")
+    msg_found "Backed up to $zshrc_backup"
 
     msg_searching "Overriding existing zshrc file"
     cp "$ZSH_INSTALL/resources/.zshrc" "$HOME/"

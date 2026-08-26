@@ -91,6 +91,10 @@ if $MOD_MAC; then
   menu_checks+=("check_install_keyrepeat")
   menu_actions+=("install_keyrepeat")
 
+  menu_labels+=("Mac Trackpad secondary click")
+  menu_checks+=("check_install_trackpad_secondary_click")
+  menu_actions+=("install_trackpad_secondary_click")
+
   menu_labels+=("Mac Finder hidden files")
   menu_checks+=("check_install_finder_hidden")
   menu_actions+=("install_finder_hidden")
