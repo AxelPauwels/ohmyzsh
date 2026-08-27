@@ -39,6 +39,7 @@ init() {
   if $MOD_MAC; then chmod 755 "$ZSH_INSTALL"/modules/mac.sh && source "$ZSH_INSTALL"/modules/mac.sh; fi
   if $MOD_JETBRAINS; then chmod 755 "$ZSH_INSTALL"/modules/jetbrains.sh && source "$ZSH_INSTALL"/modules/jetbrains.sh; fi
   if $MOD_GITHUB_CLI; then chmod 755 "$ZSH_INSTALL"/modules/github-cli.sh && source "$ZSH_INSTALL"/modules/github-cli.sh; fi
+  if $MOD_GITMOJI; then chmod 755 "$ZSH_INSTALL"/modules/gitmoji.sh && source "$ZSH_INSTALL"/modules/gitmoji.sh; fi
   if $MOD_COMMANDS; then chmod 755 "$ZSH_INSTALL"/modules/commands.sh && source "$ZSH_INSTALL"/modules/commands.sh; fi
 }
 
@@ -119,6 +120,9 @@ if $MOD_JETBRAINS; then
 fi
 if $MOD_GITHUB_CLI; then
   menu_labels+=("GitHub CLI");                  menu_checks+=("check_install_github_cli");             menu_actions+=("install_github_cli")
+fi
+if $MOD_GITMOJI; then
+  menu_labels+=("Gitmoji");                     menu_checks+=("check_install_gitmoji");                menu_actions+=("install_gitmoji")
 fi
 if $MOD_COMMANDS; then
   menu_labels+=("Command 'tree'");              menu_checks+=("check_install_tree_command");           menu_actions+=("install_tree_command")

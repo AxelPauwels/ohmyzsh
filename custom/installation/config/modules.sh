@@ -15,6 +15,7 @@ export MOD_NVM=true
 export MOD_MAC=true
 export MOD_JETBRAINS=true
 export MOD_GITHUB_CLI=true
+export MOD_GITMOJI=true
 export MOD_COMMANDS=true
 
 #set for testing some stuff
