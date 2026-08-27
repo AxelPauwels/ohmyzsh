@@ -75,6 +75,9 @@ menu_actions=()
 if $MOD_ZSH; then
   menu_labels+=("Zsh");                         menu_checks+=("check_install_zsh");                    menu_actions+=("install_zsh_manually")
 fi
+if $MOD_ZSHRC; then
+  menu_labels+=("Zshrc file");                  menu_checks+=("check_override_zshrc_file");            menu_actions+=("override_zshrc_file_manually")
+fi
 if $MOD_FONTS; then
   menu_labels+=("Fonts");                       menu_checks+=("check_install_fonts");                  menu_actions+=("install_fonts_manually")
 fi
@@ -89,9 +92,6 @@ fi
 if $MOD_WARP; then
   menu_labels+=("Warp");                        menu_checks+=("check_install_warp");                   menu_actions+=("install_warp_manually")
   menu_labels+=("Warp theme");                  menu_checks+=("check_install_warp_theme");             menu_actions+=("install_warp_theme_manually")
-fi
-if $MOD_ZSHRC; then
-  menu_labels+=("Zshrc");                       menu_checks+=("check_override_zshrc_file");            menu_actions+=("override_zshrc_file_manually")
 fi
 
 # --- Extra stuff (formerly "install more stuff") ---

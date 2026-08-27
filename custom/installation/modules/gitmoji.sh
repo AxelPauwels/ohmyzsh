@@ -4,13 +4,14 @@ install_gitmoji() {
   new_line
   msg_title "Gitmoji"
 
-  if ! command_exists brew; then
-    msg_warning "Homebrew is not installed. Please install Homebrew first."
+  if ! command_exists npm; then
+    msg_warning "npm is not installed. Please install Node/npm first."
     return
   fi
 
   msg_searching "Installing Gitmoji"
-  brew install gitmoji
+  npm i -g gitmoji-cli
+  export NODE_EXTRA_CA_CERTS="$HOME/certs/company-root.crt"
   gitmoji -i
   msg_installed "Gitmoji installed"
 }
