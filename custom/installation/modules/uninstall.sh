@@ -11,6 +11,34 @@
 # The status checks below reuse the existing check_install_* functions where
 # possible so the menu shows the same "Installed / Not installed" markers.
 
+# ----- Uninstall everything ------------------------------------------------
+# Runs every uninstaller except Zsh (skipped for now). Only the items shown in
+# the uninstall menu are covered.
+uninstall_all() {
+  new_line
+  msg_title "Uninstall all"
+
+  uninstall_fonts
+  uninstall_color_preset_and_font
+  uninstall_terminal_font
+  uninstall_theme_pk10
+  uninstall_prompt_pk10
+  uninstall_theme_agnoster
+  uninstall_zshrc
+  uninstall_keyrepeat
+  uninstall_trackpad_secondary_click
+  uninstall_finder_hidden
+  uninstall_github_cli
+  uninstall_gitmoji
+  uninstall_tree_command
+
+  menu_action_submenu=0
+  # Many items changed, so ask the menu to recompute every status line.
+  menu_refresh_all=1
+  new_line
+  msg_installed "Uninstall all finished"
+}
+
 # ----- Zsh -----------------------------------------------------------------
 uninstall_zsh() {
   msg_title "Uninstall Zsh"
@@ -43,6 +71,19 @@ uninstall_fonts() {
   done < <(find "$ZSH_INSTALL/resources/fonts/Powerline" \( -name '*.ttf' -o -name '*.otf' -o -name '*.pcf.gz' \) -type f -print0)
 
   msg_installed "Removed $removed font file(s)"
+}
+
+# ----- Terminal font settings ----------------------------------------------
+uninstall_terminal_font() {
+  msg_title "Uninstall Terminal font settings"
+
+  if has_backup terminal_plist; then
+    restore_path "$terminal_plist" terminal_plist
+    killall cfprefsd 2>/dev/null
+    msg_installed "Restored original Terminal preferences (restart Terminal)"
+  else
+    msg_warning "No Terminal preferences backup found; nothing to restore"
+  fi
 }
 
 # ----- iTerm color & font settings -----------------------------------------
@@ -78,6 +119,16 @@ uninstall_color_preset_and_font() {
   msg_installed "iTerm color & font settings uninstalled (restart iTerm2)"
 }
 
+# Removes ~/.p10k.zsh together with every ~/.p10k.zsh.backup* file the wizard
+# (or the user) ever created. Shared by the Theme and Prompt uninstallers.
+remove_p10k_configs() {
+  rm -f "$HOME/.p10k.zsh" "$HOME/.p10k.zsh".backup*
+  # Drop any pristine snapshot the installer kept so status flips cleanly.
+  rm -rf "$WIZARD_BACKUP_DIR/p10k_config.state" \
+    "$WIZARD_BACKUP_DIR/p10k_config.file" \
+    "$WIZARD_BACKUP_DIR/p10k_config.dir"
+}
+
 # ----- Theme Powerlevel10k -------------------------------------------------
 uninstall_theme_pk10() {
   msg_title "Uninstall Theme Powerlevel10k"
@@ -89,6 +140,8 @@ uninstall_theme_pk10() {
     rm -rf "$theme_dir"
   fi
 
+  remove_p10k_configs
+
   msg_installed "Theme Powerlevel10k uninstalled"
 }
 
@@ -96,19 +149,7 @@ uninstall_theme_pk10() {
 uninstall_prompt_pk10() {
   msg_title "Uninstall Prompt Powerlevel10k"
 
-  local p10k_backup
-  p10k_backup="$(latest_datetime_backup "$HOME/.p10k.zsh")"
-  if has_backup p10k_config; then
-    restore_path "$HOME/.p10k.zsh" p10k_config
-  elif [ -n "$p10k_backup" ]; then
-    cp "$p10k_backup" "$HOME/.p10k.zsh"
-    msg_found "Restored ~/.p10k.zsh from $p10k_backup"
-  elif [ -f "$HOME/.p10k.zsh.old" ]; then
-    cp "$HOME/.p10k.zsh.old" "$HOME/.p10k.zsh"
-    msg_found "Restored ~/.p10k.zsh from legacy .old backup"
-  else
-    rm -f "$HOME/.p10k.zsh"
-  fi
+  remove_p10k_configs
 
   msg_installed "Prompt Powerlevel10k uninstalled"
 }
@@ -151,19 +192,20 @@ uninstall_theme_agnoster() {
 uninstall_zshrc() {
   msg_title "Uninstall zshrc"
 
-  local zshrc_backup
-  zshrc_backup="$(latest_datetime_backup "$HOME/.zshrc")"
-  if has_backup zshrc; then
+  local initial_backup
+  initial_backup="$(zshrc_initial_backup_path)"
+
+  if [ -n "$initial_backup" ]; then
+    cp "$initial_backup" "$HOME/.zshrc"
+    msg_found "Restored ~/.zshrc from $initial_backup"
+  elif has_backup zshrc; then
     restore_path "$HOME/.zshrc" zshrc
-  elif [ -n "$zshrc_backup" ]; then
-    cp "$zshrc_backup" "$HOME/.zshrc"
-    msg_found "Restored ~/.zshrc from $zshrc_backup"
-  elif [ -f "$HOME/.zshrc.old" ]; then
-    cp "$HOME/.zshrc.old" "$HOME/.zshrc"
-    msg_found "Restored ~/.zshrc from legacy .old backup"
   else
     rm -f "$HOME/.zshrc"
   fi
+
+  # Remove every zshrc backup the wizard ever made (initial + timestamped).
+  rm -f "$HOME/.zshrc".initial-mac-backup-* "$HOME/.zshrc".backup-*
 
   msg_installed "zshrc uninstalled"
 }
@@ -202,6 +244,19 @@ uninstall_github_cli() {
     msg_warning "gh is installed but not via Homebrew; skipping automatic removal"
   else
     msg_found "GitHub CLI is not installed"
+  fi
+}
+
+# ----- Gitmoji -------------------------------------------------------------
+uninstall_gitmoji() {
+  msg_title "Uninstall Gitmoji"
+  if command_exists npm && npm ls -g gitmoji-cli >/dev/null 2>&1; then
+    npm uninstall -g gitmoji-cli
+    msg_installed "Gitmoji uninstalled"
+  elif command_exists gitmoji; then
+    msg_warning "gitmoji is installed but not via npm global; skipping automatic removal"
+  else
+    msg_found "Gitmoji is not installed"
   fi
 }
 

@@ -8,6 +8,7 @@ export MOD_FONTS=true
 export MOD_WARP=false
 export MOD_THEMES=true
 export MOD_ITERM=true
+export MOD_TERMINAL=true
 export MOD_ZSHRC=true
 export MOD_PYENV=true
 export MOD_NODE=true

@@ -117,7 +117,7 @@ get_keyrepeat_name() {
   '1/5')
     echo 'Super Fast'
     ;;
-  '2/8')
+  '2/10')
     echo 'Developer'
     ;;
   *)
@@ -138,7 +138,7 @@ install_keyrepeat() {
     "Slow 60/68 (mac default)"
     "Medium 30/34"
     "Fast 1/5"
-    "Developer 2/8 (recommended)"
+    "Developer 2/10 (recommended)"
     "Custom choice"
   )
   local -a menu_checks=(
@@ -155,6 +155,7 @@ install_keyrepeat() {
     "_apply_keyrepeat_dev"
     "_macKeyrepeat_custom"
   )
+  local -a menu_sections=()
   local menu_selected
   menu_selected=$(_keyrepeat_current_index)
   run_action_menu
@@ -276,6 +277,7 @@ install_trackpad_secondary_click() {
     "_trackpad_secondary_click_bottom_right"
     "_trackpad_secondary_click_bottom_left"
   )
+  local -a menu_sections=()
   local menu_selected
   menu_selected=$(_trackpad_secondary_click_current_index)
   run_action_menu
@@ -357,6 +359,7 @@ install_finder_hidden() {
     "_finder_show_hidden"
     "_finder_hide_hidden"
   )
+  local -a menu_sections=()
   local menu_selected
   menu_selected=$(_finder_hidden_current_index)
   run_action_menu

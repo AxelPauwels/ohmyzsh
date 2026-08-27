@@ -11,7 +11,7 @@ Besides the install Wizard, there is also an uninstall wizard available to remov
 
 # Installation
 
-Current version: **v2.1.1** (source of truth: [`VERSION`](./VERSION))
+Current version: **v2.2.0** (source of truth: [`VERSION`](./VERSION))
 
 ## Prerequisites
 - A Unix-like operating system: macOS, Linux, BSD. 
@@ -20,9 +20,16 @@ Current version: **v2.1.1** (source of truth: [`VERSION`](./VERSION))
 - `git` should be installed (recommended v2.4.11 or higher)
 
 ## Getting started
-Download the resources:
+Download the resources to specific hidden folder `~/.oh-my-zsh`:
 ```sh
+# by https
 git clone https://github.com/AxelPauwels/ohmyzsh.git ~/.oh-my-zsh
+
+# by ssh key
+git clone git@github.com:AxelPauwels/ohmyzsh.git ~/.oh-my-zsh
+
+# by ssh key with domain (due to multiple ssh keys)
+git clone git@github.com-AxelPauwels:AxelPauwels/ohmyzsh.git ~/.oh-my-zsh
 ```
 Run one of these scripts:
 ```sh
@@ -32,7 +39,8 @@ Run one of these scripts:
 ~/.oh-my-zsh/custom/installation/uninstall.sh
 ```
 
-You can add these as aliases later if you want to easy access these installers next time:
+Once you installed `Zshrc file` you can run `zshInstall` or `zshUninstall` to run the install/uninstall script again.
+Or you can add these as aliases yourself at your config.
 ```sh
 alias zshInstall='~/.oh-my-zsh/custom/installation/install.sh'
 alias zshUninstall='~/.oh-my-zsh/custom/installation/uninstall.sh'
@@ -41,6 +49,9 @@ alias zshUninstall='~/.oh-my-zsh/custom/installation/uninstall.sh'
 ### Install.sh
 #### Zsh
 _Just checks if zsh is installed. The installation of zsh is not developed yet_
+
+#### Zshrc file
+_Overrides ~/.zshrc file. (Note: Before overriding, there will be a backup file created of the existing `~/.zshrc` to `~/.zshrc.old`)_
 
 #### Fonts
 _Installs fonts to `~/Library/Fonts`. This will install `MesloLGS NF Regular` (recommended for powerlevelp10) and `Powerline` font-package._
@@ -59,18 +70,16 @@ _These values can be found at iTerm2 > Settings > Profiles > Colors | Text_
 _Installs the Powerlevel10k theme with configuration wizard. Warp does not support this yet. [See Warp-custom-prompt-compatibility](https://docs.warp.dev/features/prompt#custom-prompt-compatibility-table)_
 
 #### Theme Agnoster
+
 #### Warp
 _Installs Warp by `brew install --cask warp`. If brew is not installed, this will be installed before installing Warp._
 
 #### Warp Theme 'Custom'
-_After installing this you schould set some preferences._
-_Warp > Settings > Appearence > Click on 'current theme' > Select at bottom 'Custom' > click check-icon_
+_After installing this you should set some preferences._
+_Warp > Settings > Appearance > Click on 'current theme' > Select at bottom 'Custom' > click check-icon_
 _Warp > Settings > Features > Session > Honor user's custom prompt (PS1)_
 
-#### Zshrc
-_Overrides ~/.zshrc file. (Note: Before overriding, there will be a backup file created of the existing `~/.zshrc` to `~/.zshrc.old`)_
-
-#### Xtools 
+#### Xtools
 
 #### Homebrew
 

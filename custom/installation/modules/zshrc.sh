@@ -2,19 +2,33 @@
 
 zshrc_path="$HOME/.zshrc"
 
+# Prints the path of the pristine "initial mac" backup, if one exists.
+zshrc_initial_backup_path() {
+  ls -1t "$zshrc_path".initial-mac-backup-* 2>/dev/null | head -1
+}
+
 override_zshrc_file() {
   new_line
   msg_title "Create/Override zshrc"
   msg_searching "Searching zshrc file"
 
-  backup_path "$zshrc_path" zshrc
-
   if file_exists "$zshrc_path"; then
     msg_found "Found"
 
-    msg_searching "Copying existing zshrc file as a timestamped backup"
-    zshrc_backup=$(backup_file_datetime "$zshrc_path")
-    msg_found "Backed up to $zshrc_backup"
+    # The very first install keeps a pristine snapshot of the user's original
+    # Mac zshrc named ".zshrc.initial-mac-backup-<datetime>" so the uninstaller
+    # can restore it. Every later install only adds a ".zshrc.backup-<datetime>"
+    # so no version is ever lost.
+    if [ -z "$(zshrc_initial_backup_path)" ]; then
+      msg_searching "Creating initial backup of your original zshrc file"
+      zshrc_backup="${zshrc_path}.initial-mac-backup-$(date +%Y-%m-%d_%H-%M-%S)"
+      cp "$zshrc_path" "$zshrc_backup"
+      msg_found "Backed up to $zshrc_backup"
+    else
+      msg_searching "Copying existing zshrc file as a timestamped backup"
+      zshrc_backup=$(backup_file_datetime "$zshrc_path")
+      msg_found "Backed up to $zshrc_backup"
+    fi
 
     msg_searching "Overriding existing zshrc file"
     cp "$ZSH_INSTALL/resources/.zshrc" "$HOME/"

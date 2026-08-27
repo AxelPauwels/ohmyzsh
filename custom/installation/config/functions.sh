@@ -265,7 +265,10 @@ run_action_menu() {
     for ((i = 0; i < count; i++)); do
       if [ -n "${menu_sections[$i]:-}" ]; then
         [ "$i" -gt 0 ] && msg "$eol"
-        msg_dimmed "${menu_sections[$i]}$eol"
+        # A whitespace-only section value is just a blank separator (no label).
+        if [ -n "${menu_sections[$i]//[[:space:]]/}" ]; then
+          msg_dimmed "${menu_sections[$i]}$eol"
+        fi
       fi
       if [ "$selected" -eq "$i" ]; then marker="[◉]"; else marker=" ◯ "; fi
       status_line="${_menu_status[$i]}"
@@ -301,6 +304,7 @@ run_action_menu() {
       new_line
       _menu_show_cursor
       menu_action_submenu=0
+      menu_refresh_all=0
       if [ -n "${menu_actions[$selected]:-}" ]; then
         "${menu_actions[$selected]}"
         if [ "${menu_action_submenu:-0}" -ne 1 ]; then
@@ -309,7 +313,17 @@ run_action_menu() {
         fi
       fi
       _menu_hide_cursor
-      if [ -n "${menu_checks[$selected]:-}" ]; then
+      # A batch action (Install all / Uninstall all) touches many items, so it
+      # asks for every status to be recomputed; otherwise only refresh the item
+      # that was acted on.
+      if [ "${menu_refresh_all:-0}" -eq 1 ]; then
+        local ri
+        for ((ri = 0; ri < count; ri++)); do
+          if [ -n "${menu_checks[$ri]:-}" ]; then
+            _menu_status[$ri]="$(${menu_checks[$ri]} 2>&1)"
+          fi
+        done
+      elif [ -n "${menu_checks[$selected]:-}" ]; then
         _menu_status[$selected]="$(${menu_checks[$selected]} 2>&1)"
       fi
       [ "${menu_exit:-0}" -eq 1 ] && break
