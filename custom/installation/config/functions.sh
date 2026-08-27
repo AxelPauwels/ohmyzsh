@@ -231,6 +231,47 @@ install_cursor_guard() {
   trap 'stop_spinner; _menu_show_cursor; exit 143' TERM
 }
 
+# Draws the pinned menu block (title, items with their statuses, hint) starting
+# at the home position and leaves the cursor parked just below it. Relies on
+# bash dynamic scoping to read run_action_menu's locals (menu_title, count,
+# menu_labels, _menu_status, selected, …). It never clears below, so it can also
+# be used to repaint the menu over its own lines without disturbing the action
+# output printed underneath it.
+_menu_draw_block() {
+  local i marker status_line
+  local eol=$'\033[K'
+  _menu_home
+  msg_title "$menu_title$eol"
+  msg "$eol"
+  if [ -n "${menu_header:-}" ]; then
+    msg "$menu_header$eol"
+    msg "$eol"
+  fi
+  for ((i = 0; i < count; i++)); do
+    if [ -n "${menu_sections[$i]:-}" ]; then
+      [ "$i" -gt 0 ] && msg "$eol"
+      # A whitespace-only section value is just a blank separator (no label).
+      if [ -n "${menu_sections[$i]//[[:space:]]/}" ]; then
+        msg_dimmed "${menu_sections[$i]}$eol"
+      fi
+    fi
+    if [ "$selected" -eq "$i" ]; then marker="[◉]"; else marker=" ◯ "; fi
+    status_line="${_menu_status[$i]}"
+    if [ -n "$status_line" ]; then
+      msg " $marker ${menu_labels[$i]} $status_line$eol"
+    else
+      msg " $marker ${menu_labels[$i]}$eol"
+    fi
+  done
+  msg "$eol"
+  if [ -n "${menu_footer:-}" ]; then
+    msg "$menu_footer$eol"
+    msg "$eol"
+  fi
+  msg_dimmed "$hint$eol"
+  msg_dimmed "────────────────────────────────────────────$eol"
+}
+
 run_action_menu() {
   local count=${#menu_labels[@]}
   local selected=${menu_selected:-0}
@@ -254,34 +295,7 @@ run_action_menu() {
   _menu_reset_screen
 
   while true; do
-    _menu_home
-    local eol=$'\033[K'
-    msg_title "$menu_title$eol"
-    msg "$eol"
-    if [ -n "${menu_header:-}" ]; then
-      msg "$menu_header$eol"
-      msg "$eol"
-    fi
-    for ((i = 0; i < count; i++)); do
-      if [ -n "${menu_sections[$i]:-}" ]; then
-        [ "$i" -gt 0 ] && msg "$eol"
-        msg_dimmed "${menu_sections[$i]}$eol"
-      fi
-      if [ "$selected" -eq "$i" ]; then marker="[◉]"; else marker=" ◯ "; fi
-      status_line="${_menu_status[$i]}"
-      if [ -n "$status_line" ]; then
-        msg " $marker ${menu_labels[$i]} $status_line$eol"
-      else
-        msg " $marker ${menu_labels[$i]}$eol"
-      fi
-    done
-    msg "$eol"
-    if [ -n "${menu_footer:-}" ]; then
-      msg "$menu_footer$eol"
-      msg "$eol"
-    fi
-    msg_dimmed "$hint$eol"
-    msg_dimmed "────────────────────────────────────────────$eol"
+    _menu_draw_block
 
     # Cursor is now parked at the top of the output area (line after the hint).
     key=$(read_menu_key)
@@ -301,6 +315,7 @@ run_action_menu() {
       new_line
       _menu_show_cursor
       menu_action_submenu=0
+      menu_refresh_all=0
       if [ -n "${menu_actions[$selected]:-}" ]; then
         "${menu_actions[$selected]}"
         if [ "${menu_action_submenu:-0}" -ne 1 ]; then
@@ -309,10 +324,32 @@ run_action_menu() {
         fi
       fi
       _menu_hide_cursor
-      if [ -n "${menu_checks[$selected]:-}" ]; then
+      # Drop bash's cached command locations: an install action may have executed
+      # a tool (e.g. gitmoji, gh, tree) in this shell, hashing its path. After an
+      # uninstall the binary is gone but `command -v` would still report the stale
+      # hashed path as valid, so the status check must start from a clean hash.
+      hash -r 2>/dev/null
+      # A batch action (Install all / Uninstall all) touches many items, so it
+      # asks for every status to be recomputed; otherwise only refresh the item
+      # that was acted on.
+      if [ "${menu_refresh_all:-0}" -eq 1 ]; then
+        local ri
+        for ((ri = 0; ri < count; ri++)); do
+          if [ -n "${menu_checks[$ri]:-}" ]; then
+            _menu_status[$ri]="$(${menu_checks[$ri]} 2>&1)"
+          fi
+        done
+      elif [ -n "${menu_checks[$selected]:-}" ]; then
         _menu_status[$selected]="$(${menu_checks[$selected]} 2>&1)"
       fi
       [ "${menu_exit:-0}" -eq 1 ] && break
+      # The pinned menu is still on screen above the action output but shows the
+      # pre-action status. Repaint it in place (save cursor, redraw over its own
+      # lines without clearing below, restore cursor) so the just-updated status
+      # is visible immediately — without waiting for the acknowledgement keypress.
+      printf '\033[s' >&2
+      _menu_draw_block
+      printf '\033[u' >&2
       # A submenu action (its own run_action_menu) already ran its own interactive
       # screen; the user quit it deliberately, so return to this menu immediately
       # without an extra acknowledgement prompt.

@@ -359,6 +359,46 @@ install_jetbrains_plugins() {
   menu_action_submenu=1
 }
 
+# Non-interactive install used by "Install all": if IntelliJ IDEA is present,
+# install every curated plugin (equivalent to checking all boxes and saving);
+# if it is not installed, skip quietly.
+install_jetbrains_plugins_all() {
+  new_line
+  msg_title "IntelliJ IDEA plugins"
+
+  if [ ! -d "$_jetbrains_app" ]; then
+    msg_dimmed "IntelliJ IDEA not found, skipping."
+    return
+  fi
+  if ! _jetbrains_precheck; then
+    return
+  fi
+
+  local n=${#_jetbrains_plugin_ids[@]}
+  local installed i ok=0 fail=0 skip=0
+  start_spinner "Checking installed IntelliJ IDEA plugins…"
+  installed=$(_jetbrains_installed_ids)
+  stop_spinner
+
+  for ((i = 0; i < n; i++)); do
+    if grep -qxF "${_jetbrains_plugin_ids[$i]}" <<<"$installed"; then
+      msg_found "${_jetbrains_plugin_names[$i]} already installed"
+      skip=$((skip + 1))
+    elif _jetbrains_download_plugin "${_jetbrains_plugin_ids[$i]}" "${_jetbrains_plugin_names[$i]}"; then
+      ok=$((ok + 1))
+    else
+      fail=$((fail + 1))
+    fi
+  done
+
+  new_line
+  if [ "$fail" -eq 0 ]; then
+    msg_installed "Installed $ok plugin(s), $skip already present. Restart IntelliJ IDEA to load them."
+  else
+    msg_warning "Installed $ok plugin(s), $skip already present, $fail failed. Restart IntelliJ IDEA to load them."
+  fi
+}
+
 # Top-level status shown next to the "Jetbrains IntelliJ Plugins" menu item.
 check_install_jetbrains() {
   if [ ! -d "$_jetbrains_app" ]; then

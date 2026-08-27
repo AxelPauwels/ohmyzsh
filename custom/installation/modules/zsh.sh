@@ -26,7 +26,7 @@ check_install_zsh() {
 }
 
 install_zsh_manually() {
-  msg_italic "Currently not developed yet. You can install it here:"
+  msg_italic "Currently not developed since it comes with macOS these days. You can install/update it here:"
   msg_inline "URL: "
   msg_url "$zsh_documentation"
 }
