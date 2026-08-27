@@ -304,6 +304,7 @@ run_action_menu() {
       if [ -n "${menu_actions[$selected]:-}" ]; then
         "${menu_actions[$selected]}"
         if [ "${menu_action_submenu:-0}" -ne 1 ]; then
+          echo "" >&2
           msg_dimmed "Done. Continue in menu by using ↑/↓ and Enter or press q to quit."
         fi
       fi
