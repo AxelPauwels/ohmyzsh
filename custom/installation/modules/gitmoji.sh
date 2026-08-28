@@ -9,28 +9,10 @@ install_gitmoji() {
     return
   fi
 
-  msg_searching "Installing Gitmoji"
+  msg_searching "Installing Gitmoji CLI"
   npm i -g gitmoji-cli
 
-  # Point Node at the corporate root CA so gitmoji can reach its API through an
-  # SSL-inspecting proxy. Only export it when the file actually exists, otherwise
-  # Node prints a confusing "load failed / No such file" warning.
-  if [ -f "$HOME/certs/company-root.crt" ]; then
-    export NODE_EXTRA_CA_CERTS="$HOME/certs/company-root.crt"
-  fi
-
-  # `gitmoji -i` installs the commit-msg hook, which only works inside a git
-  # repository. During "Install all" the working directory isn't a repo, so guard
-  # it to avoid the "not a git repository" error aborting the step. Still sync the
-  # emoji cache so the picker isn't empty when the hook is set up later.
-  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    gitmoji -i
-  else
-    gitmoji -u >/dev/null 2>&1
-    msg_warning "Skipped commit-hook init (not in a git repo). Run 'gitmoji -i' inside a project to enable it."
-  fi
-
-  msg_installed "Gitmoji installed"
+  msg_installed "Gitmoji CLI installed"
 }
 
 check_install_gitmoji() {
@@ -38,5 +20,40 @@ check_install_gitmoji() {
     msg_found_version "Installed" "$(extract_version "$(gitmoji --version 2>/dev/null | head -1)")"
   else
     msg_not_found "Not installed"
+  fi
+}
+
+# Installs the gitmoji commit-msg hook into the current repository. The hook only
+# works inside a git repository, so guard against running it elsewhere.
+install_gitmoji_hook() {
+  new_line
+  msg_title "Gitmoji CLI commit-hook"
+
+  if ! command_exists gitmoji; then
+    msg_warning "Gitmoji CLI is not installed. Please install Gitmoji CLI first."
+    return
+  fi
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    msg_warning "The current directory is not a git repository. Run this inside a project to enable the commit-hook."
+    return
+  fi
+
+  msg_searching "Installing Gitmoji commit-hook in this repository"
+  gitmoji -i
+  msg_installed "Gitmoji commit-hook installed in this repository"
+}
+
+check_install_gitmoji_hook() {
+  local hook
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    hook="$(git rev-parse --git-path hooks/prepare-commit-msg 2>/dev/null)"
+    if [ -f "$hook" ] && grep -q "gitmoji" "$hook" 2>/dev/null; then
+      msg_found "Installed in this repo"
+    else
+      msg_not_found "Not installed in this repo"
+    fi
+  else
+    msg_not_found "Not a git repository"
   fi
 }

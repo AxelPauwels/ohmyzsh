@@ -94,6 +94,11 @@ _Choose between off, click with two fingers, click at bottom right corner or cli
 
 #### GitHub Cli
 
+#### Gitmoji Cli
+
+#### Gitmoji Cli Hook
+Install the gitmoji-cli hook in current dir, if current dir is a git repository.
+
 #### Command 'tree'
 
 ### configure-powerlevel.sh

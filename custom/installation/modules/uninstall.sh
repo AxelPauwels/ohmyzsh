@@ -252,11 +252,31 @@ uninstall_gitmoji() {
   msg_title "Uninstall Gitmoji"
   if command_exists npm && npm ls -g gitmoji-cli >/dev/null 2>&1; then
     npm uninstall -g gitmoji-cli
-    msg_installed "Gitmoji uninstalled"
+    msg_installed "Gitmoji CLI uninstalled"
   elif command_exists gitmoji; then
-    msg_warning "gitmoji is installed but not via npm global; skipping automatic removal"
+    msg_warning "gitmoji CLI is installed but not via npm global; skipping automatic removal"
   else
-    msg_found "Gitmoji is not installed"
+    msg_found "Gitmoji CLI is not installed"
+  fi
+}
+
+# ----- Gitmoji commit-hook -------------------------------------------------
+# Removes the gitmoji commit-msg hook from the current repository only.
+uninstall_gitmoji_hook() {
+  msg_title "Uninstall Gitmoji commit-hook"
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    msg_warning "The current directory is not a git repository. Run this inside a project to remove the commit-hook."
+    return
+  fi
+
+  local hook
+  hook="$(git rev-parse --git-path hooks/prepare-commit-msg 2>/dev/null)"
+  if [ -f "$hook" ] && grep -q "gitmoji" "$hook" 2>/dev/null; then
+    rm -f "$hook"
+    msg_installed "Gitmoji commit-hook removed from this repository"
+  else
+    msg_found "No Gitmoji commit-hook found in this repository"
   fi
 }
 

@@ -171,9 +171,6 @@ export PATH="/usr/local/sbin:$PATH"
 # alias python='python3' #seems not to work anymore
 eval "$(pyenv init --path)"
 
-# for using gitmoji when somebody/some company restricted by VPN usage
-export NODE_EXTRA_CA_CERTS="$HOME/certs/company-root.crt"
-
 # for using nvm
 export NVM_DIR=~/.nvm
 source $(brew --prefix nvm)/nvm.sh
