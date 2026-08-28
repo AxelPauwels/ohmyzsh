@@ -226,6 +226,11 @@ menu_selected=0
 run_action_menu
 
 clear
-new_line
-msg_installed "Reloading your shell, please wait…"
-exec zsh
+# Only reload the shell if the user actually installed/changed something. If they
+# just navigated the menu with the arrow keys and quit, there's nothing to apply,
+# so leave the current shell untouched.
+if [ "${menu_action_ran:-0}" -eq 1 ]; then
+  new_line
+  msg_installed "Reloading your shell, please wait…"
+  exec zsh
+fi
