@@ -291,6 +291,9 @@ run_action_menu() {
 
   menu_quit=0
   menu_exit=0
+  # Tracks whether the user actually ran any action this session, so callers can
+  # decide e.g. whether a shell reload is warranted (pure navigation shouldn't).
+  menu_action_ran=0
   _menu_hide_cursor
   _menu_reset_screen
 
@@ -303,25 +306,22 @@ run_action_menu() {
     $'\x1b[A')
       selected=$((selected - 1))
       [ "$selected" -lt 0 ] && selected=$((count - 1))
-      _menu_clear_below
       ;;
     $'\x1b[B')
       selected=$((selected + 1))
       [ "$selected" -ge "$count" ] && selected=0
-      _menu_clear_below
       ;;
     "" | $'\n' | $'\r')
+      # Clear any previous action output below the pinned menu, then run the
+      # selected action so its output prints directly beneath the menu.
       _menu_clear_below
       new_line
       _menu_show_cursor
       menu_action_submenu=0
       menu_refresh_all=0
       if [ -n "${menu_actions[$selected]:-}" ]; then
+        menu_action_ran=1
         "${menu_actions[$selected]}"
-        if [ "${menu_action_submenu:-0}" -ne 1 ]; then
-          echo "" >&2
-          msg_dimmed "Done. Continue in menu by using ↑/↓ and Enter or press q to quit."
-        fi
       fi
       _menu_hide_cursor
       # Drop bash's cached command locations: an install action may have executed
@@ -343,44 +343,21 @@ run_action_menu() {
         _menu_status[$selected]="$(${menu_checks[$selected]} 2>&1)"
       fi
       [ "${menu_exit:-0}" -eq 1 ] && break
-      # The pinned menu is still on screen above the action output but shows the
-      # pre-action status. Repaint it in place (save cursor, redraw over its own
-      # lines without clearing below, restore cursor) so the just-updated status
-      # is visible immediately — without waiting for the acknowledgement keypress.
-      printf '\033[s' >&2
-      _menu_draw_block
-      printf '\033[u' >&2
-      # A submenu action (its own run_action_menu) already ran its own interactive
-      # screen; the user quit it deliberately, so return to this menu immediately
-      # without an extra acknowledgement prompt.
+      # A submenu action ran its own interactive screen; the user quit it
+      # deliberately, so start this menu again from a clean screen.
       if [ "${menu_action_submenu:-0}" -eq 1 ]; then
         menu_quit=0
         _menu_reset_screen
         continue
       fi
-      # Otherwise the action's output stays on screen until the user presses a
-      # key. That output can be long enough to scroll the terminal, which would
-      # move the menu's home position. So we read the acknowledgement key here
-      # (while the output is still visible) and then do a FULL screen reset before
-      # the loop redraws the menu — otherwise the pinned header lands mid-scroll
-      # and the menu renders garbled/truncated.
-      key=$(read_menu_key)
-      case "$key" in
-      $'\x1b[A')
-        selected=$((selected - 1))
-        [ "$selected" -lt 0 ] && selected=$((count - 1))
-        ;;
-      $'\x1b[B')
-        selected=$((selected + 1))
-        [ "$selected" -ge "$count" ] && selected=0
-        ;;
-      q | Q)
-        menu_quit=1
-        _menu_reset_screen
-        break
-        ;;
-      esac
-      _menu_reset_screen
+      # Non-submenu action: keep the command output on screen and re-pin the menu
+      # at the top with its refreshed status on the next loop iteration. There is
+      # no acknowledgement keypress and no full-screen reset, so nothing flashes
+      # and the terminal is never cleared — the user can scroll to review the full
+      # output. If the output was long enough to scroll the terminal, the menu is
+      # simply redrawn at the top of the current viewport.
+      new_line
+      msg_dimmed "Done. Use ↑/↓ and Enter to continue, or press q to quit."
       ;;
     q | Q)
       menu_quit=1
