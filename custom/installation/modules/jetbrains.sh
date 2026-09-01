@@ -25,7 +25,7 @@ _jetbrains_plugin_ids=(
   "izhangzhihao.rainbow.brackets"
   "com.github.copilot"
   "dev.nx.console"
-  "com.wix.scss.lint"
+  "manjaro.mpb"
   "manjaro.spb"
 )
 _jetbrains_plugin_names=(
@@ -33,7 +33,7 @@ _jetbrains_plugin_names=(
   "Rainbow Brackets"
   "GitHub Copilot"
   "Nx Console"
-  "Scss-lint"
+  "Mario Progress Bar"
   "Sonic Progress Bar"
 )
 
