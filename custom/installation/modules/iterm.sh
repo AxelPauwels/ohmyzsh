@@ -131,6 +131,49 @@ _override_plist() {
   msg_installed "Iterm2 preferences installed"
 }
 
+# Applies three extra iTerm2 preferences that otherwise surface as first-time
+# prompts / restrictions in the terminal:
+#   1. PreventEscapeSequenceFromClearingHistory = false
+#        -> the "A control sequence attempted to clear scrollback history.
+#           Allow this in the future?" prompt. Setting the key (to false = do
+#           NOT prevent) is exactly what clicking "Always Allow" does, so the
+#           prompt never appears and clearing is allowed.
+#   2. ClickToSelectCommand = false
+#        -> disables "clicking a command selects it" (which restricts Find,
+#           Filter and Select All to that command). This is what the
+#           announcement's "Click here to disable this feature" link sets.
+#           NoSyncUserHasSelectedCommand is also set so the announcement banner
+#           is suppressed.
+#   3. Unlimited Scrollback = true on every profile (Settings > Profiles >
+#      Terminal > "Unlimited scrollback").
+#
+# Runs AFTER _override_plist so the freshly-copied plist keeps these values.
+# The resources plist is also pre-baked with the same values, so a plain copy
+# already carries them; these commands make the intent explicit and idempotent.
+_set_terminal_preferences() {
+  new_line
+  msg_title "Iterm2 terminal preferences"
+  msg_searching "Applying scrollback & selection preferences"
+
+  # --- Global preferences ---------------------------------------------------
+  defaults write com.googlecode.iterm2 PreventEscapeSequenceFromClearingHistory -bool false
+  defaults write com.googlecode.iterm2 ClickToSelectCommand -bool false
+  defaults write com.googlecode.iterm2 NoSyncUserHasSelectedCommand -bool true
+
+  # --- Per-profile: unlimited scrollback for every bookmark -----------------
+  local i=0
+  while /usr/libexec/PlistBuddy -c "Print :'New Bookmarks':$i:'Guid'" "$iterm2_plist" >/dev/null 2>&1; do
+    if /usr/libexec/PlistBuddy -c "Print :'New Bookmarks':$i:'Unlimited Scrollback'" "$iterm2_plist" >/dev/null 2>&1; then
+      /usr/libexec/PlistBuddy -c "Set :'New Bookmarks':$i:'Unlimited Scrollback' true" "$iterm2_plist"
+    else
+      /usr/libexec/PlistBuddy -c "Add :'New Bookmarks':$i:'Unlimited Scrollback' bool true" "$iterm2_plist"
+    fi
+    i=$((i + 1))
+  done
+
+  msg_installed "Iterm2 terminal preferences set (restart iTerm2 to apply)"
+}
+
 #todo: this can only be set/activated by an applescript (this is under construction)
 _set_color_preset() {
   msg_searching "Checking color preset"
@@ -201,6 +244,7 @@ install_color_preset_and_font() {
   _set_color_preset
   _set_font
   _override_plist
+  _set_terminal_preferences
 }
 
 install_color_preset_and_font_manually() {

@@ -54,6 +54,7 @@ menu_labels+=("Theme Agnoster");               menu_checks+=("check_install_them
 menu_labels+=("Mac Cursor speed");             menu_checks+=("check_install_keyrepeat");              menu_actions+=("uninstall_keyrepeat")
 menu_labels+=("Mac Trackpad secondary click"); menu_checks+=("check_install_trackpad_secondary_click"); menu_actions+=("uninstall_trackpad_secondary_click")
 menu_labels+=("Mac Finder hidden files");      menu_checks+=("check_install_finder_hidden");          menu_actions+=("uninstall_finder_hidden")
+menu_labels+=("Mac Finder default view");      menu_checks+=("check_install_finder_view");            menu_actions+=("uninstall_finder_view")
 menu_labels+=("GitHub CLI");                   menu_checks+=("check_install_github_cli");             menu_actions+=("uninstall_github_cli")
 menu_labels+=("Gitmoji CLI");                      menu_checks+=("check_install_gitmoji");                menu_actions+=("uninstall_gitmoji")
 menu_labels+=("Gitmoji CLI commit-hook");          menu_checks+=("check_install_gitmoji_hook");           menu_actions+=("uninstall_gitmoji_hook")

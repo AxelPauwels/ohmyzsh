@@ -394,3 +394,83 @@ check_install_finder_hidden() {
     msg_not_found "Not installed"
   fi
 }
+
+# --- Finder default view style -----------------------------------------------
+# Sets the default view for new Finder windows via FXPreferredViewStyle. Codes:
+#   icnv = Icon view, Nlsv = List view, clmv = Column view, Flwv = Gallery view.
+
+# @params: <four-letter view code>
+_finder_view_apply() {
+  backup_defaults com.apple.finder FXPreferredViewStyle finder_preferred_view_style
+  defaults write com.apple.finder FXPreferredViewStyle -string "${1}"
+  killall Finder 2>/dev/null
+}
+
+_finder_view_icon()    { _finder_view_apply icnv; msg_installed "Finder default view is now Icon"; }
+_finder_view_list()    { _finder_view_apply Nlsv; msg_installed "Finder default view is now List"; }
+_finder_view_column()  { _finder_view_apply clmv; msg_installed "Finder default view is now Column"; }
+_finder_view_gallery() { _finder_view_apply Flwv; msg_installed "Finder default view is now Gallery"; }
+
+install_finder_view() {
+  local menu_title="Which default Finder view do you want?"
+  local menu_header=""
+  local -a menu_labels=(
+    "Icon view (mac default)"
+    "List view"
+    "Column view (recommended)"
+    "Gallery view"
+  )
+  local -a menu_checks=()
+  local -a menu_actions=(
+    "_finder_view_icon"
+    "_finder_view_list"
+    "_finder_view_column"
+    "_finder_view_gallery"
+  )
+  local -a menu_sections=()
+  local menu_selected
+  menu_selected=$(_finder_view_current_index)
+  run_action_menu
+  clear
+  menu_action_submenu=1
+}
+
+# @params: <four-letter view code>
+get_finder_view_name() {
+  case "${1}" in
+  icnv) echo 'Icon' ;;
+  Nlsv) echo 'List' ;;
+  clmv) echo 'Column' ;;
+  Flwv) echo 'Gallery' ;;
+  *) echo '' ;;
+  esac
+}
+
+# Index of the currently active option in install_finder_view's menu, so the
+# submenu opens on what is configured right now.
+_finder_view_current_index() {
+  local value
+  value=$(defaults read com.apple.finder FXPreferredViewStyle 2>/dev/null)
+  case "$value" in
+  icnv) echo 0 ;;
+  Nlsv) echo 1 ;;
+  clmv) echo 2 ;;
+  Flwv) echo 3 ;;
+  *) echo 0 ;;
+  esac
+}
+
+check_install_finder_view() {
+  local value name
+  value=$(defaults read com.apple.finder FXPreferredViewStyle 2>/dev/null)
+  if [ "$value" = "clmv" ]; then
+    msg_found "Installed 'Column view'"
+  else
+    name=$(get_finder_view_name "$value")
+    if [ -n "$name" ]; then
+      msg_not_found "Not installed (currently '$name view')"
+    else
+      msg_not_found "Not installed"
+    fi
+  fi
+}

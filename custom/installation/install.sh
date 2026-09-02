@@ -121,6 +121,7 @@ install_all() {
     _install_all_keyrepeat_dev
     _trackpad_secondary_click_bottom_right
     _finder_show_hidden
+    _finder_view_column
   fi
 
   if $MOD_JETBRAINS; then install_jetbrains_plugins_all; fi
@@ -202,6 +203,7 @@ if $MOD_MAC; then
   menu_labels+=("Mac Cursor speed");            menu_checks+=("check_install_keyrepeat");              menu_actions+=("install_keyrepeat")
   menu_labels+=("Mac Trackpad secondary click"); menu_checks+=("check_install_trackpad_secondary_click"); menu_actions+=("install_trackpad_secondary_click")
   menu_labels+=("Mac Finder hidden files");     menu_checks+=("check_install_finder_hidden");          menu_actions+=("install_finder_hidden")
+  menu_labels+=("Mac Finder default view");     menu_checks+=("check_install_finder_view");            menu_actions+=("install_finder_view")
 fi
 if $MOD_JETBRAINS; then
   menu_labels+=("Jetbrains IntelliJ Plugins");  menu_checks+=("check_install_jetbrains");              menu_actions+=("install_jetbrains_plugins")

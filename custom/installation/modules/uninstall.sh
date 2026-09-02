@@ -28,6 +28,7 @@ uninstall_all() {
   uninstall_keyrepeat
   uninstall_trackpad_secondary_click
   uninstall_finder_hidden
+  uninstall_finder_view
   uninstall_github_cli
   uninstall_gitmoji
   uninstall_tree_command
@@ -232,6 +233,14 @@ uninstall_finder_hidden() {
   restore_defaults com.apple.finder AppleShowAllFiles finder_show_all_files
   killall Finder 2>/dev/null
   msg_installed "Finder hidden-files setting reset to its pre-install state"
+}
+
+# ----- Mac Finder default view ---------------------------------------------
+uninstall_finder_view() {
+  msg_title "Uninstall Mac Finder default view"
+  restore_defaults com.apple.finder FXPreferredViewStyle finder_preferred_view_style
+  killall Finder 2>/dev/null
+  msg_installed "Finder default view reset to its pre-install state"
 }
 
 # ----- GitHub CLI ----------------------------------------------------------
