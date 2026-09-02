@@ -153,25 +153,128 @@ _override_plist() {
 _set_terminal_preferences() {
   new_line
   msg_title "Iterm2 terminal preferences"
-  msg_searching "Applying scrollback & selection preferences"
+  msg_searching "Applying scrollback, selection & bell preferences"
+
+  # Apply straight to the plist FILE now. This is enough when iTerm2 is NOT
+  # running (e.g. the wizard is launched from Terminal.app or a fresh install).
+  _apply_iterm_terminal_prefs "$iterm2_plist"
+
+  # Drop cfprefsd's cached copy so it reloads the file we just edited.
+  killall cfprefsd 2>/dev/null
+
+  # The hard part: iTerm2 rewrites its ENTIRE plist from its in-memory copy when
+  # it quits, so anything we (or `defaults write`) change while it runs is
+  # reverted on quit -- which is why "quit & reopen" still showed the old value.
+  # To make it stick we re-apply the settings AFTER iTerm2 has fully quit, from
+  # a detached watcher that outlives this wizard (and the iTerm2 window hosting
+  # it). When the user quits iTerm2, the watcher writes the plist while nothing
+  # owns it, so the next launch loads our values cleanly.
+  if pgrep -x iTerm2 >/dev/null 2>&1; then
+    _persist_iterm_prefs_after_quit
+    msg_warning "iTerm2 is running. The settings are queued to apply the moment you quit it."
+    msg_installed "Now fully quit iTerm2 (Cmd+Q) and reopen it -- the preferences will be applied."
+  else
+    msg_installed "Iterm2 terminal preferences set (open iTerm2 to see them)"
+  fi
+}
+
+# _apply_iterm_terminal_prefs <plist_path>
+# Writes every terminal preference we manage directly into the plist FILE:
+#   - global selection / scrollback-clearing keys
+#   - per-profile Unlimited Scrollback + Silence Bell (mute the audible bell)
+_apply_iterm_terminal_prefs() {
+  local plist="$1"
 
   # --- Global preferences ---------------------------------------------------
-  defaults write com.googlecode.iterm2 PreventEscapeSequenceFromClearingHistory -bool false
-  defaults write com.googlecode.iterm2 ClickToSelectCommand -bool false
-  defaults write com.googlecode.iterm2 NoSyncUserHasSelectedCommand -bool true
+  _plist_set_bool "$plist" "PreventEscapeSequenceFromClearingHistory" false
+  _plist_set_bool "$plist" "ClickToSelectCommand" false
+  _plist_set_bool "$plist" "NoSyncUserHasSelectedCommand" true
 
-  # --- Per-profile: unlimited scrollback for every bookmark -----------------
+  # --- Per-profile settings for every bookmark ------------------------------
   local i=0
-  while /usr/libexec/PlistBuddy -c "Print :'New Bookmarks':$i:'Guid'" "$iterm2_plist" >/dev/null 2>&1; do
-    if /usr/libexec/PlistBuddy -c "Print :'New Bookmarks':$i:'Unlimited Scrollback'" "$iterm2_plist" >/dev/null 2>&1; then
-      /usr/libexec/PlistBuddy -c "Set :'New Bookmarks':$i:'Unlimited Scrollback' true" "$iterm2_plist"
-    else
-      /usr/libexec/PlistBuddy -c "Add :'New Bookmarks':$i:'Unlimited Scrollback' bool true" "$iterm2_plist"
-    fi
+  while /usr/libexec/PlistBuddy -c "Print :'New Bookmarks':$i:'Guid'" "$plist" >/dev/null 2>&1; do
+    _plist_set_profile_bool "$plist" "$i" "Unlimited Scrollback" true
+    _plist_set_profile_bool "$plist" "$i" "Silence Bell" true
     i=$((i + 1))
   done
+}
 
-  msg_installed "Iterm2 terminal preferences set (restart iTerm2 to apply)"
+# Spawns a detached background process that waits for iTerm2 to exit and then
+# writes our preferences to the plist, so iTerm2's on-quit save cannot clobber
+# them. Self-terminates after a timeout if iTerm2 never quits.
+_persist_iterm_prefs_after_quit() {
+  local watcher="$WIZARD_BACKUP_DIR/iterm-prefs-watcher.sh"
+  mkdir -p "$WIZARD_BACKUP_DIR"
+
+  cat >"$watcher" <<WATCHER
+#!/usr/bin/env bash
+plist="$iterm2_plist"
+
+set_bool() {
+  if /usr/libexec/PlistBuddy -c "Print :\$2" "\$1" >/dev/null 2>&1; then
+    /usr/libexec/PlistBuddy -c "Set :\$2 \$3" "\$1"
+  else
+    /usr/libexec/PlistBuddy -c "Add :\$2 bool \$3" "\$1"
+  fi
+}
+set_profile_bool() {
+  if /usr/libexec/PlistBuddy -c "Print :'New Bookmarks':\$2:'\$3'" "\$1" >/dev/null 2>&1; then
+    /usr/libexec/PlistBuddy -c "Set :'New Bookmarks':\$2:'\$3' \$4" "\$1"
+  else
+    /usr/libexec/PlistBuddy -c "Add :'New Bookmarks':\$2:'\$3' bool \$4" "\$1"
+  fi
+}
+
+# Wait until no iTerm2 process is running (max ~30 min), then apply.
+tries=0
+while pgrep -x iTerm2 >/dev/null 2>&1; do
+  sleep 2
+  tries=\$((tries + 1))
+  [ "\$tries" -gt 900 ] && exit 0
+done
+# Small grace period so iTerm2 finishes writing its own plist first.
+sleep 1
+
+set_bool "\$plist" "PreventEscapeSequenceFromClearingHistory" false
+set_bool "\$plist" "ClickToSelectCommand" false
+set_bool "\$plist" "NoSyncUserHasSelectedCommand" true
+
+i=0
+while /usr/libexec/PlistBuddy -c "Print :'New Bookmarks':\$i:'Guid'" "\$plist" >/dev/null 2>&1; do
+  set_profile_bool "\$plist" "\$i" "Unlimited Scrollback" true
+  set_profile_bool "\$plist" "\$i" "Silence Bell" true
+  i=\$((i + 1))
+done
+
+killall cfprefsd 2>/dev/null
+rm -f "$watcher"
+WATCHER
+
+  chmod +x "$watcher"
+  nohup bash "$watcher" </dev/null >/dev/null 2>&1 &
+  disown 2>/dev/null || true
+}
+
+# _plist_set_bool <plist_path> <key> <true|false>
+# Sets a top-level boolean key directly in the plist file (adds it if missing),
+# avoiding cfprefsd so it stays consistent with the direct file copy above.
+_plist_set_bool() {
+  local plist="$1" key="$2" value="$3"
+  if /usr/libexec/PlistBuddy -c "Print :$key" "$plist" >/dev/null 2>&1; then
+    /usr/libexec/PlistBuddy -c "Set :$key $value" "$plist"
+  else
+    /usr/libexec/PlistBuddy -c "Add :$key bool $value" "$plist"
+  fi
+}
+
+# _plist_set_profile_bool <plist_path> <bookmark_index> <key> <true|false>
+_plist_set_profile_bool() {
+  local plist="$1" idx="$2" key="$3" value="$4"
+  if /usr/libexec/PlistBuddy -c "Print :'New Bookmarks':$idx:'$key'" "$plist" >/dev/null 2>&1; then
+    /usr/libexec/PlistBuddy -c "Set :'New Bookmarks':$idx:'$key' $value" "$plist"
+  else
+    /usr/libexec/PlistBuddy -c "Add :'New Bookmarks':$idx:'$key' bool $value" "$plist"
+  fi
 }
 
 #todo: this can only be set/activated by an applescript (this is under construction)
